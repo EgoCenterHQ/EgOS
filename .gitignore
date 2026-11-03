@@ -1,0 +1,23 @@
+# build output
+out/
+*.iso
+*.img
+build.log
+# local build trees (manual method)
+config/
+chroot/
+binary/
+cache/
+.build/
+keys/
+# manual tooling
+docs/manual/venv/
+__pycache__/
+# never commit credentials or exports
+.env
+*.env
+.env.txt
+immichset.json
+jelluser.json
+old_chat/
+*.bundle

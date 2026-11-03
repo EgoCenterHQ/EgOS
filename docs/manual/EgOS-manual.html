@@ -1,0 +1,4055 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EgOS manual</title>
+<style>
+@page {
+  size: A5;
+  margin: 17mm 14mm 19mm 14mm;
+  @bottom-center { content: counter(page); font: 8pt "Noto Sans", sans-serif; color: #6b6b6b; }
+  @top-center { content: string(chapter); font: 7pt "Noto Sans", sans-serif; letter-spacing: .08em;
+                text-transform: uppercase; color: #8a8a8a; }
+}
+@page :left  { margin-left: 13mm; margin-right: 16mm; }
+@page :right { margin-left: 16mm; margin-right: 13mm; }
+@page cover { margin: 0; @bottom-center { content: none; } @top-center { content: none; } }
+@page blank { @bottom-center { content: none; } @top-center { content: none; } }
+@page :blank { @bottom-center { content: none; } @top-center { content: none; } }
+
+:root {
+  --ink: #1d1d1b; --muted: #5f5f5a; --rule: #d9d6cf; --paper: #ffffff;
+  --accent: #b5462a; --accent-soft: #f6e9e4; --note: #2f5d7c; --note-soft: #e7eff5;
+  --tip: #3d6b3a; --tip-soft: #e9f1e6; --code-bg: #f4f2ee;
+}
+body { font: 9.4pt/1.45 "Noto Serif", "Liberation Serif", Georgia, serif; color: var(--ink); margin: 0;
+       background: var(--paper); hyphens: auto; }
+h1, h2, h3, h4, h5, .part-num, .part-name, th, .box-title, nav { font-family: "Noto Sans", "Liberation Sans", system-ui, sans-serif; }
+
+/* --- cover --- */
+.cover { page: cover; height: 210mm; width: 148mm; position: relative; background: #1f2a30; color: #f3efe7;
+             break-after: page; overflow: hidden; }
+.cover .band { position: absolute; left: 0; right: 0; top: 0; height: 9mm; background: var(--accent); }
+.cover .brand { position: absolute; left: 16mm; top: 46mm; font: 700 44pt/1 "Noto Sans", sans-serif; letter-spacing: -.02em; }
+.cover .brand span { color: var(--accent); }
+.cover .title { position: absolute; left: 16mm; right: 16mm; top: 66mm; font: 400 15pt/1.3 "Noto Sans", sans-serif; }
+.cover .subtitle { position: absolute; left: 16mm; right: 16mm; top: 84mm; font: 9pt/1.5 "Noto Serif", serif; color: #c9c3b6; }
+.cover svg { position: absolute; left: 16mm; bottom: 34mm; width: 116mm; }
+.cover .footer { position: absolute; left: 16mm; right: 16mm; bottom: 14mm; font: 8pt "Noto Sans", sans-serif;
+                    color: #a9a397; display: flex; justify-content: space-between; }
+
+.colophon { page: blank; break-after: page; padding-top: 120mm; font-size: 7.6pt; color: var(--muted); }
+.colophon p { margin: .3em 0; }
+
+/* --- parti --- */
+.part-page { page: blank; break-before: right; break-after: page; padding-top: 70mm; }
+.part-num { font-size: 9pt; letter-spacing: .2em; text-transform: uppercase; color: var(--accent); }
+.part-name { font-size: 22pt; font-weight: 700; margin-top: 3mm; border-top: 1.2pt solid var(--ink); padding-top: 4mm; }
+
+/* --- titoli --- */
+h1 { string-set: chapter content(); break-before: page; font-size: 17pt; line-height: 1.15; margin: 0 0 6mm;
+     padding-bottom: 2.5mm; border-bottom: .8pt solid var(--rule); }
+.part-page + h1 { break-before: auto; }
+h1.no-run { string-set: chapter ""; }
+h2 { font-size: 11.5pt; margin: 6mm 0 2mm; color: var(--ink); break-after: avoid; }
+h3 { font-size: 9.8pt; margin: 4.5mm 0 1.5mm; break-after: avoid; }
+h4, h5 { font-size: 9pt; margin: 3.5mm 0 1mm; color: var(--muted); break-after: avoid; }
+p { margin: 0 0 2.2mm; orphans: 2; widows: 2; }
+.lead { font-size: 10pt; color: var(--muted); }
+a { color: inherit; text-decoration: none; }
+strong { font-weight: 700; }
+
+/* --- liste numerate a "passi" --- */
+ol { padding-left: 0; list-style: none; counter-reset: passo; margin: 0 0 3mm; }
+ol > li { counter-increment: passo; position: relative; padding-left: 7.5mm; margin-bottom: 1.4mm; }
+ol > li::before { content: counter(passo); position: absolute; left: 0; top: .05em; width: 4.6mm; height: 4.6mm;
+                  border-radius: 50%; background: var(--ink); color: #fff; font: 700 6.8pt/4.6mm "Noto Sans", sans-serif;
+                  text-align: center; }
+ul { padding-left: 4.5mm; margin: 0 0 3mm; }
+ul li { margin-bottom: .8mm; }
+ul li::marker { color: var(--accent); }
+
+/* --- tabelle --- */
+table { width: 100%; border-collapse: collapse; margin: 1.5mm 0 4mm; font-size: 7.6pt; line-height: 1.35;
+        break-inside: auto; }
+thead { display: table-header-group; }
+tr { break-inside: avoid; }
+th { text-align: left; font-weight: 700; font-size: 7pt; text-transform: uppercase; letter-spacing: .04em;
+     color: var(--muted); border-bottom: .9pt solid var(--ink); padding: 1.2mm 1.6mm 1mm 0; }
+td { border-bottom: .4pt solid var(--rule); padding: 1.1mm 1.6mm 1.1mm 0; vertical-align: top; }
+td:first-child { font-weight: 600; }
+td code, th code { white-space: normal; word-break: break-word; }
+
+/* --- codice --- */
+code { font: .88em "Noto Sans Mono", "Liberation Mono", monospace; background: var(--code-bg); padding: 0 .25em;
+       border-radius: 1.5pt; hyphens: none; overflow-wrap: anywhere; }
+pre { background: var(--code-bg); border-left: 1.6pt solid var(--ink); padding: 2mm 2.6mm; margin: 1.5mm 0 3.5mm;
+      white-space: pre-wrap; word-break: break-all; font-size: 7.2pt; line-height: 1.4; break-inside: avoid; }
+pre code { background: none; padding: 0; font-size: 1em; }
+
+/* --- riquadri --- */
+.box { margin: 2mm 0 3.5mm; padding: 2.2mm 3mm; border-radius: 2pt; break-inside: avoid; border-left: 2.2pt solid; }
+.box p:last-child { margin-bottom: 0; }
+.box-title { display: inline; font-size: 7.4pt; text-transform: uppercase; letter-spacing: .08em; margin-right: .3em; }
+.warning { background: var(--accent-soft); border-color: var(--accent); }
+.warning .box-title { color: var(--accent); }
+.note { background: var(--note-soft); border-color: var(--note); }
+.note .box-title { color: var(--note); }
+.tip { background: var(--tip-soft); border-color: var(--tip); }
+.tip .box-title { color: var(--tip); }
+blockquote { margin: 2mm 0 3mm; padding-left: 3mm; border-left: 1.4pt solid var(--rule); color: var(--muted); }
+
+/* --- part III --- */
+h2.group { break-before: page; font-size: 8pt; text-transform: uppercase; letter-spacing: .18em; color: var(--accent);
+            margin: 0 0 1mm; }
+h1#reference + p + h2.group { break-before: auto; }
+section.script { margin-bottom: 6mm; }
+h2.script-title { font-size: 13pt; margin-top: 2mm; padding-bottom: 1.5mm; border-bottom: .8pt solid var(--ink); }
+section.script + h2.group { margin-top: 0; }
+section.script > table:first-of-type td:first-child { width: 28%; }
+hr { border: 0; border-top: .5pt dashed var(--rule); margin: 4mm 0; }
+
+/* --- contents --- */
+nav.contents { page: blank; break-after: page; }
+nav.contents h1 { break-before: auto; }
+nav.contents ol { counter-reset: none; }
+nav.contents li { padding: 0; margin: 0; }
+nav.contents li::before { content: none; }
+nav.contents a::after { content: leader(".") " " target-counter(attr(href), page); color: var(--muted); }
+.toc-part { font-size: 7pt; text-transform: uppercase; letter-spacing: .16em; color: var(--accent); margin-top: 3.5mm !important; }
+.toc-cap { font-size: 9pt; font-weight: 600; margin: .9mm 0 !important; }
+.toc-group { font-size: 7.4pt; font-weight: 600; margin: 1.6mm 0 .4mm 3mm !important; color: var(--muted); }
+.toc-script { font-size: 7.6pt; margin-left: 6mm !important; }
+
+/* --- schermo --- */
+@media screen {
+  html { background: #e9e6e0; }
+  body { box-sizing: border-box; max-width: 148mm; margin: 10mm auto; padding: 0 14mm 10mm;
+         box-shadow: 0 1px 12px rgba(0,0,0,.18); }
+  .cover { width: auto; margin: 0 -14mm; }
+  table { max-width: 100%; }
+  th, td { overflow-wrap: break-word; }
+  .part-page { padding-top: 30mm; padding-bottom: 20mm; }
+  h1 { margin-top: 14mm; }
+  .colophon { padding-top: 10mm; }
+  nav.contents a::after { content: none; }
+}
+@media screen and (max-width: 160mm) {
+  body { margin: 0; padding: 0 16px 16px; box-shadow: none; }
+  .cover { margin: 0 -16px; }
+  table { display: block; overflow-x: auto; }
+}
+</style>
+</head>
+<body>
+<section class="cover"><div class="band"></div><div class="brand">Eg<span>OS</span></div><div class="title">Instruction manual</div><div class="subtitle">Home media centre: photos, films, music and series on Debian 13.<br>Raspberry Pi 5 &middot; PC x86-64</div><svg viewBox="0 0 116 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+<g fill="none" stroke="#f3efe7" stroke-width=".5">
+<rect x="0.5" y="12" width="34" height="22" rx="2"/><circle cx="7" cy="23" r="1.6" fill="#b5462a" stroke="none"/>
+<line x1="12" y1="20" x2="29" y2="20"/><line x1="12" y1="24" x2="25" y2="24"/><line x1="12" y1="28" x2="27" y2="28"/>
+<path d="M35 23 H52"/><path d="M52 8 V38"/>
+<rect x="56" y="2" width="24" height="12" rx="1.5"/><rect x="56" y="16" width="24" height="12" rx="1.5"/><rect x="56" y="30" width="24" height="9" rx="1.5" stroke-dasharray="1.4 1"/>
+<path d="M52 8 H56 M52 22 H56 M52 34.5 H56"/>
+<path d="M80 22 H92"/><circle cx="100" cy="22" r="8"/><path d="M97 18.5 L104 22 L97 25.5 Z" fill="#f3efe7" stroke="none"/>
+</g></svg><div class="footer"><span>Version 4.3.0</span><span>2026-11-03</span></div></section>
+<section class="colophon"><p><strong>EgOS 4.3.0</strong> — Instruction manual</p><p>Generated on 2026-11-03 from <code>docs/manual/manual.md</code> and <code>docs/scripts/*.md</code> with <code>build-manual.py</code>.</p><p>Reference: scripts <code>EgOS4-arm64.sh</code> and <code>EgOS4-amd64.sh</code>.</p></section>
+<nav class="contents"><h1 class="no-run" id="contents">Contents</h1><ol><li class="toc-part">Part I — User guide</li><li class="toc-cap"><a href="#ch-welcome">Welcome</a></li><li class="toc-cap"><a href="#ch-installation">Installation</a></li><li class="toc-cap"><a href="#ch-first-boot-guided-setup">First boot: guided setup</a></li><li class="toc-cap"><a href="#ch-second-boot-automatic-preparation">Second boot: automatic preparation</a></li><li class="toc-cap"><a href="#ch-everyday-use">Everyday use</a></li><li class="toc-cap"><a href="#ch-disks-the-storage-pool">Disks: the storage pool</a></li><li class="toc-cap"><a href="#ch-optional-services">Optional services</a></li><li class="toc-cap"><a href="#ch-command-quick-reference">Command quick reference</a></li><li class="toc-cap"><a href="#ch-troubleshooting">Troubleshooting</a></li><li class="toc-part">Part II — Administrator guide</li><li class="toc-cap"><a href="#ch-architecture">Architecture</a></li><li class="toc-cap"><a href="#ch-where-things-are">Where things are</a></li><li class="toc-cap"><a href="#ch-security-and-known-limits">Security and known limits</a></li><li class="toc-cap"><a href="#ch-release-notes">Release notes</a></li><li class="toc-part">Part III — Technical reference</li><li class="toc-cap"><a href="#reference">Scripts and functions</a></li><li class="toc-group"><a href="#group-build-scripts">Build scripts</a></li><li class="toc-script"><a href="#script-egos4-arm64">EgOS4-arm64.sh</a></li><li class="toc-script"><a href="#script-egos4-amd64">EgOS4-amd64.sh</a></li><li class="toc-script"><a href="#script-builder">Builders — building the ISO and the Pi image in throwaway containers</a></li><li class="toc-script"><a href="#script-hook-live-build">live-build hooks (amd64 only)</a></li><li class="toc-group"><a href="#group-first-and-second-boot">First and second boot</a></li><li class="toc-script"><a href="#script-setup-webapp">setup-webapp.sh</a></li><li class="toc-script"><a href="#script-webapp-py">webapp.py</a></li><li class="toc-script"><a href="#script-egos-growroot">egos-growroot.sh (arm64 only)</a></li><li class="toc-script"><a href="#script-deploy-compose">deploy-compose.sh</a></li><li class="toc-script"><a href="#script-dirtree">dirtree.sh</a></li><li class="toc-script"><a href="#script-wizardall2">wizardall2.sh</a></li><li class="toc-script"><a href="#script-stack-configuration">Stack configuration (compose, env, JSON)</a></li><li class="toc-script"><a href="#script-egos-home">egos-home — home page with one card per container</a></li><li class="toc-group"><a href="#group-storage">Storage</a></li><li class="toc-script"><a href="#script-egos-storage">egos-storage</a></li><li class="toc-script"><a href="#script-cockpit-storage-pool">Cockpit page "Storage pool"</a></li><li class="toc-script"><a href="#script-systemd-udev-units">systemd units, drop-ins and udev rule</a></li><li class="toc-group"><a href="#group-optional-services">Optional services</a></li><li class="toc-script"><a href="#script-egos-extras">egos-extras</a></li><li class="toc-script"><a href="#script-torrent-web">torrent_web.py</a></li><li class="toc-script"><a href="#script-qbt-sort">qbt-sort.py</a></li><li class="toc-script"><a href="#script-audiotags">audiotags.py</a></li></ol></nav>
+<!-- Source of the EgOS manual. Parts I and II are here; Part III (technical reference)
+     is assembled by build-manual.py from ../scripts/*.md. -->
+
+<div class="part-page"><div class="part-num">Part I</div><div class="part-name">User guide</div></div>
+<h1 class="part-start" data-part="Part I — User guide" id="ch-welcome">Welcome</h1>
+<p>Thank you for choosing <strong>EgOS</strong>, the system that turns a small home computer into a personal media
+centre: your photos, films, music and series, always at hand on every device in your home network,
+with no subscriptions and no third-party cloud.</p>
+<p>This booklet takes you from installation to everyday use. <strong>Part I</strong> is for the people who use the
+box; <strong>Part II</strong> is for whoever administers it; <strong>Part III</strong> describes, script by script and function
+by function, how the system is built.</p>
+<h2>What EgOS does</h2>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>What it is for</th>
+<th>Address</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Home page</strong></td>
+<td>one card per service, with a link to each</td>
+<td><code>http://egocenter.local:8000</code></td>
+</tr>
+<tr>
+<td><strong>Jellyfin</strong></td>
+<td>watch films and series, listen to music from TV, phone, browser</td>
+<td><code>http://egocenter.local:8096</code></td>
+</tr>
+<tr>
+<td><strong>Immich</strong></td>
+<td>backup and gallery for your phone's photos</td>
+<td><code>http://egocenter.local:2283</code></td>
+</tr>
+<tr>
+<td><strong>Shared folder</strong> (Samba)</td>
+<td>copy media files from your PC</td>
+<td><code>\\egocenter.local\media</code></td>
+</tr>
+<tr>
+<td><strong>Cockpit</strong></td>
+<td>administration console and disk management</td>
+<td><code>https://egocenter.local:9090</code></td>
+</tr>
+<tr>
+<td><strong>SSH</strong></td>
+<td>terminal access</td>
+<td><code>ssh user@egocenter.local</code></td>
+</tr>
+</tbody>
+</table>
+<h2>Contents and requirements</h2>
+<table>
+<thead>
+<tr>
+<th>Edition</th>
+<th>For</th>
+<th>Installation medium</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>egos-4.3.0-amd64.iso</code></td>
+<td>x86-64 PC, mini PC, virtual machine</td>
+<td>USB stick (automatic installation)</td>
+</tr>
+<tr>
+<td><code>egos-4.3.0-arm64.img</code></td>
+<td>Raspberry Pi 5 with NVMe SSD</td>
+<td>image written directly to the NVMe</td>
+</tr>
+</tbody>
+</table>
+<p>You also need:</p>
+<ul>
+<li>an Internet connection over an <strong>Ethernet cable</strong> (needed at the second boot to download the services);</li>
+<li>a phone or a PC for the initial setup;</li>
+<li>optional: one or more external USB disks for more space.</li>
+</ul>
+<h2>Warnings</h2>
+<blockquote class="box warning">
+<p><strong class="box-title">Warning</strong> — Installing on a PC <strong>completely erases</strong> the target disk without asking for
+confirmation. If the computer has several disks, the installer asks which one to use: choose carefully.</p>
+</blockquote>
+<blockquote class="box warning">
+<p><strong class="box-title">Warning</strong> — Adding a disk to the pool <strong>erases everything</strong> on it. EgOS always asks, and wants you
+to type the disk's name to confirm.</p>
+</blockquote>
+<blockquote class="box note">
+<p><strong class="box-title">Note</strong> — EgOS does not use RAID: if a data disk fails you lose the files that were on it, not those
+on the other disks. Keep a copy of important photos somewhere else.</p>
+</blockquote>
+<h1 id="ch-installation">Installation</h1>
+<h2>On a PC (amd64)</h2>
+<ol>
+<li>Write <code>egos-4.3.0-amd64.iso</code> to a USB stick (with <code>dd</code>, balenaEtcher, Rufus in DD mode, etc.).</li>
+<li>Connect the PC to the network with the <strong>Ethernet cable</strong>.</li>
+<li>Boot the PC from the stick (BIOS or UEFI, either works).</li>
+<li>The menu opens on <strong>Start installer</strong> and starts by itself after <strong>5 seconds</strong>.</li>
+<li>The installation is fully automatic (about 5 minutes): Italian language, Italian keyboard,
+   Europe/Rome time zone, machine name <code>egocenter</code>.</li>
+<li>When it is done the PC <strong>powers off</strong>. Remove the stick.</li>
+</ol>
+<h2>On a Raspberry Pi 5 (arm64)</h2>
+<ol>
+<li>Connect the NVMe SSD to your PC with a USB adapter.</li>
+<li>Write <code>egos-4.3.0-arm64.img</code> to the NVMe with <strong>Raspberry Pi Imager</strong> → <em>Use custom</em>
+   (or with <code>dd</code> from Linux).</li>
+<li>Fit the NVMe to the Pi 5. In the EEPROM, the boot order (<code>BOOT_ORDER</code>) must include the value <code>6</code>
+   (NVMe): check it with <code>rpi-eeprom-config</code>.</li>
+<li>Connect the Ethernet cable and the power supply.</li>
+</ol>
+<p>At the first boot the system grows its partition by itself to fill the whole NVMe.</p>
+<blockquote class="box tip">
+<p><strong class="box-title">Tip</strong> — With a monitor connected, the login screen shows the box's IP address and the useful
+addresses. Handy when the <code>.local</code> name does not work.</p>
+</blockquote>
+<h1 id="ch-first-boot-guided-setup">First boot: guided setup</h1>
+<p>At the first boot EgOS serves a small setup page. You can reach it in two ways.</p>
+<h2>Over Wi-Fi (if the box has Wi-Fi)</h2>
+<ol>
+<li>On your phone, look for the Wi-Fi network <strong>SetupBox</strong> and connect.</li>
+<li>The network password is <code>setup1234</code>.</li>
+<li>The phone opens the "Sign in to network" page by itself; if it does not, open any <code>http://</code>
+   address in the browser.</li>
+</ol>
+<h2>Over the cable</h2>
+<p>From a PC on the same network open <strong><code>http://setupbox.local</code></strong>, or <code>http://&lt;box IP&gt;</code> (shown on the
+monitor connected to the box, or in your router's page).</p>
+<h2>Fill in the form</h2>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Used for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Email</strong></td>
+<td>Immich administrator account</td>
+</tr>
+<tr>
+<td><strong>Username</strong></td>
+<td>user for the system, Jellyfin, the shared folder and Cockpit</td>
+</tr>
+<tr>
+<td><strong>Password</strong></td>
+<td>one password for all the services above</td>
+</tr>
+</tbody>
+</table>
+<p>Press <strong>Complete Setup</strong>. "Setup Complete" appears: the box turns off the SetupBox network and
+<strong>reboots</strong>.</p>
+<blockquote class="box warning">
+<p><strong class="box-title">Warning</strong> — During setup the page is not protected: whoever fills it in first becomes the
+administrator. Do the first boot in a trusted environment and complete it straight away.</p>
+</blockquote>
+<h1 id="ch-second-boot-automatic-preparation">Second boot: automatic preparation</h1>
+<p>After the reboot the box, now reachable as <strong><code>egocenter.local</code></strong>, works on its own:</p>
+<ol>
+<li>it waits until the clock is synchronised and the Internet answers;</li>
+<li>it creates the folders for films, music, series, ROMs, downloads and photos;</li>
+<li>it prepares the shared folder with your username and password;</li>
+<li>it downloads and starts Immich and Jellyfin (a few GB: on a slow line this can take a long time);</li>
+<li>it creates your administrator account in Immich and Jellyfin;</li>
+<li>it starts the <strong>home page</strong> <code>http://egocenter.local:8000</code>, with a card for every service.</li>
+</ol>
+<p>If something goes wrong (for example no Internet), the preparation <strong>retries at the next boot</strong>.</p>
+<h2>Before you start: create the Jellyfin libraries</h2>
+<p>Jellyfin is configured in Italian, but the libraries have to be added by hand, once:
+open Jellyfin → <strong>Dashboard</strong> → <strong>Libraries</strong> → <strong>Add Media Library</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Content type</th>
+<th>Folder to choose</th>
+<th>Where to copy the files</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Movies</td>
+<td><code>/Films</code></td>
+<td><code>media\Films</code></td>
+</tr>
+<tr>
+<td>Shows</td>
+<td><code>/Serie</code></td>
+<td><code>media\SerieTv</code></td>
+</tr>
+<tr>
+<td>Music</td>
+<td><code>/Musics</code></td>
+<td><code>media\Musics</code></td>
+</tr>
+<tr>
+<td>(optional) Other</td>
+<td><code>/ROMs</code></td>
+<td><code>media\ROMs</code></td>
+</tr>
+</tbody>
+</table>
+<h1 id="ch-everyday-use">Everyday use</h1>
+<h2>Copying films, music and series</h2>
+<p>From your PC open the shared folder <strong>media</strong> and sign in with your username and password.</p>
+<table>
+<thead>
+<tr>
+<th>System</th>
+<th>Address</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Windows</td>
+<td>in File Explorer: <code>\\egocenter.local\media</code> (the box also appears under <strong>Network</strong>)</td>
+</tr>
+<tr>
+<td>macOS</td>
+<td>Finder → Go → Connect to Server → <code>smb://egocenter.local/media</code></td>
+</tr>
+<tr>
+<td>Linux</td>
+<td><code>smb://egocenter.local/media</code> in the file manager</td>
+</tr>
+</tbody>
+</table>
+<p>Organise the files like this (these are the names Jellyfin recognises best):</p>
+<pre><code>Films/Inception (2010)/Inception (2010).mkv
+SerieTv/Dark (2017)/Season 01/Dark (2017) - S01E01.mkv
+Musics/Artist/Album/01 - Track.flac
+</code></pre>
+<p>Jellyfin picks up new files by itself; you can force a scan from <strong>Dashboard → Libraries</strong>.</p>
+<h2>Watching and listening</h2>
+<p>Open <code>http://egocenter.local:8096</code> in the browser, or install the <strong>Jellyfin</strong> app on your TV, phone or
+tablet and enter <code>http://egocenter.local:8096</code> (or the box's IP) as the server.</p>
+<h2>Phone photos</h2>
+<p>Install the <strong>Immich</strong> app, enter <code>http://egocenter.local:2283</code> as the server, sign in with the
+<strong>email and password</strong> from the setup and turn on automatic backup.</p>
+<h2>The administration console (Cockpit)</h2>
+<p>Open <code>https://egocenter.local:9090</code>. The browser reports an untrusted certificate (it is
+self-signed): accept the risk to continue. Sign in with your username and password.
+For disk operations click <strong>Limited access</strong> at the top right and enter your password again.</p>
+<p>The <strong>Storage pool</strong> page is described in the next chapter. The <strong>Overview</strong> page shows a red banner
+only when a pool disk is missing.</p>
+<h2>The home page</h2>
+<p>Open <code>http://egocenter.local:8000</code>: one card for every service of the box, with a link to it. The page
+follows Docker by itself: a container that publishes a web page gets a card within 15 seconds (the optional
+services too, once enabled), a stopped one turns grey, one whose health check fails gets a yellow border.
+Cockpit always has its card. Databases and other non-web ports never appear.</p>
+<h1 id="ch-disks-the-storage-pool">Disks: the storage pool</h1>
+<p>EgOS gathers all the space into one big folder, the <strong>pool</strong> (<code>/srv/egos/pool</code>). At first the pool
+lives on the system disk; every disk you add joins the pool <strong>without moving anything and without
+stopping the services</strong>. Films, photos and the shared folder always see the same paths.</p>
+<table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Where new files go</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No external disk</td>
+<td>system disk</td>
+</tr>
+<tr>
+<td>One or more disks</td>
+<td>the disk with the most free space</td>
+</tr>
+<tr>
+<td>A disk unplugged</td>
+<td>the other disks; that disk's files are not visible until it is back</td>
+</tr>
+</tbody>
+</table>
+<p>Each disk needs at least <strong>20 GB free</strong> to receive new files. Once there are data disks, the system disk
+no longer receives new files: if every data disk drops below 20 GB free, writes fail with a
+"read-only file system" error. This is intended: the system disk never fills up.</p>
+<h2>Adding a disk</h2>
+<p><strong>From Cockpit:</strong> Storage pool → <em>Disks that can be added</em> → <strong>Add to pool</strong> → type the disk's name
+(e.g. <code>/dev/sda</code>) → <strong>Erase and add</strong>.</p>
+<p><strong>From a terminal:</strong> <code>storage-add</code>, choose the disk's number, type its name to confirm.</p>
+<p>EgOS partitions and formats the disk, then runs an <strong>integrity test</strong>: it writes 128 MB of random data,
+reads it back and compares it, checks for kernel errors and measures the speed. A "fake" disk
+(counterfeit capacity) or a faulty one is rejected and does <strong>not</strong> join the pool.</p>
+<h2>Emptying the system disk</h2>
+<p>After you add a disk, the files already there stay on the system disk (visible and working).
+To move them: <strong>Empty system disk</strong> in Cockpit, or <code>storage-drain</code>. The paths do not change and the
+services keep working during the move. Files changed in the last 10 minutes are left for the next run.
+You can close the page: the operation carries on on the server.</p>
+<h2>Removing a disk</h2>
+<ol>
+<li>With the disk <strong>still connected</strong>: <strong>Remove</strong> on its row (or <code>storage-remove</code>).</li>
+<li>Type the branch name (e.g. <code>data1</code>) to confirm. The disk is <strong>not</strong> formatted.</li>
+<li>Wait for the message <strong>YOU CAN NOW SAFELY UNPLUG THE DISK</strong>, then unplug it.</li>
+</ol>
+<p>If it was the last disk, new files go back to the system disk.</p>
+<h2>If a disk gets disconnected</h2>
+<p>At boot EgOS waits 60 seconds for the disks, then starts anyway in <strong>degraded</strong> mode:</p>
+<ul>
+<li>the missing disk's files are not visible;</li>
+<li><strong>Jellyfin stays off</strong> on purpose: otherwise its library scan would delete the missing titles
+  together with their metadata and watch history;</li>
+<li>Immich and the shared folder keep working;</li>
+<li>a red banner appears in Cockpit (Overview and Storage pool) and at SSH login.</li>
+</ul>
+<p><strong>Plug the disk back in</strong>: it is remounted <strong>automatically</strong> within seconds and Jellyfin restarts.
+Alternatively press <strong>Retry missing disks</strong> (<code>storage-reattach</code>). If the disk is gone for good,
+press <strong>Remove</strong> on its row.</p>
+<h1 id="ch-optional-services">Optional services</h1>
+<p>The image contains two extra services, <strong>off</strong> until you turn them on.</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>What it offers</th>
+<th>Addresses</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>qbtt</code></td>
+<td>qBittorrent + search page + automatic sorting of downloads into Films, SerieTv, Musics</td>
+<td><code>:8082</code> client, <code>:8083</code> search</td>
+</tr>
+<tr>
+<td><code>bento</code></td>
+<td>PDF tools in the browser (merge, split, compress…)</td>
+<td><code>:8080</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code>egos-extras list             # list and status
+egos-extras enable qbtt      # the first time it stops: edit the .env it names
+egos-extras enable qbtt      # second time: starts
+egos-extras disable qbtt     # stops (files and data stay)
+</code></pre>
+<p>For <code>qbtt</code>, at the first start follow the <code>README.md</code> in its folder: temporary password
+(<code>docker logs qbittorrent-nox</code>), Web UI credentials, "Bypass authentication for clients on localhost" and
+the command <code>python3 /scripts/qbt-sort.py "%K"</code> to run when a download completes. Torrents that contain
+executables or scripts are <strong>not</strong> moved and get a <code>POTENTIALLY HARMFUL</code> file.</p>
+<h1 id="ch-command-quick-reference">Command quick reference</h1>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>storage-status</code></td>
+<td>pool and disk status</td>
+</tr>
+<tr>
+<td><code>storage-add</code></td>
+<td>add a disk (erases it)</td>
+</tr>
+<tr>
+<td><code>storage-drain</code></td>
+<td>move files from the system disk to the data disks</td>
+</tr>
+<tr>
+<td><code>storage-remove</code></td>
+<td>remove a disk safely</td>
+</tr>
+<tr>
+<td><code>storage-reattach</code></td>
+<td>remount disks that were plugged back in</td>
+</tr>
+<tr>
+<td><code>egos-extras list</code></td>
+<td>optional services</td>
+</tr>
+<tr>
+<td><code>cat /etc/egos-release</code></td>
+<td>installed version</td>
+</tr>
+<tr>
+<td><code>cd ~/app/repos &amp;&amp; docker compose ps</code></td>
+<td>container status</td>
+</tr>
+<tr>
+<td><code>cd ~/app/repos &amp;&amp; docker compose restart</code></td>
+<td>restart the stack</td>
+</tr>
+<tr>
+<td><code>journalctl -u egos-pool</code></td>
+<td>pool log</td>
+</tr>
+<tr>
+<td><code>journalctl -u docker-compose-startup</code></td>
+<td>log of the 2nd-boot preparation</td>
+</tr>
+</tbody>
+</table>
+<h1 id="ch-troubleshooting">Troubleshooting</h1>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>I cannot see the <strong>SetupBox</strong> network</td>
+<td>the box has no Wi-Fi</td>
+<td>use the cable: <code>http://setupbox.local</code> or the IP</td>
+</tr>
+<tr>
+<td><code>setupbox.local</code> / <code>egocenter.local</code> does not open</td>
+<td>the device does not support mDNS</td>
+<td>use the IP address (box monitor or router)</td>
+</tr>
+<tr>
+<td>After setup Jellyfin/Immich do not answer</td>
+<td>download in progress or no Internet</td>
+<td>wait; check <code>journalctl -u docker-compose-startup</code>; reboot: the preparation retries</td>
+</tr>
+<tr>
+<td>Jellyfin does not start, red banner</td>
+<td>a pool disk is missing</td>
+<td>plug it back in (cable, power) or <strong>Retry missing disks</strong></td>
+</tr>
+<tr>
+<td><em>Another storage operation is running</em></td>
+<td>another disk operation is in progress</td>
+<td>wait for it to end and retry</td>
+</tr>
+<tr>
+<td><em>UNMOUNT REFUSED</em> while removing</td>
+<td>something is using the disk</td>
+<td><strong>do not unplug it</strong>; <code>cd ~/app/repos &amp;&amp; docker compose down</code>, repeat, then <code>docker compose up -d</code></td>
+</tr>
+<tr>
+<td><em>FAILED: the data read back does not match</em></td>
+<td>counterfeit or faulty disk</td>
+<td>do not use it</td>
+</tr>
+<tr>
+<td>Copy fails with "read-only file system" (EROFS)</td>
+<td>every data disk has less than 20 GB free: by design the system disk no longer takes new files</td>
+<td>free some space or add a disk; it does not happen with large, non-full disks</td>
+</tr>
+<tr>
+<td>Cockpit: <em>Administrative access needed</em></td>
+<td>session with limited access</td>
+<td><strong>Limited access</strong> at the top right → password</td>
+</tr>
+<tr>
+<td><code>egos-extras enable</code> stops at once</td>
+<td><code>.env</code> still contains <code>CHANGEME</code></td>
+<td>edit the file it names and run it again</td>
+</tr>
+<tr>
+<td>Pool "not mounted"</td>
+<td>pool service stopped</td>
+<td><strong>Retry missing disks</strong>; <code>systemctl status egos-pool</code></td>
+</tr>
+</tbody>
+</table>
+<div class="part-page"><div class="part-num">Part II</div><div class="part-name">Administrator guide</div></div>
+<h1 class="part-start" data-part="Part II — Administrator guide" id="ch-architecture">Architecture</h1>
+<p>EgOS is produced by <strong>two self-contained scripts</strong> that need no external files:</p>
+<table>
+<thead>
+<tr>
+<th>Script</th>
+<th>Output</th>
+<th>Build environment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>EgOS4-arm64.sh</code></td>
+<td>ready-made image for the Pi 5</td>
+<td>throwaway <code>debian:trixie</code> container + mmdebstrap + qemu-user (<code>builder-arm64-raspPi/</code>), or WSL2 Debian 13</td>
+</tr>
+<tr>
+<td><code>EgOS4-amd64.sh</code></td>
+<td>ISO with automatic installer</td>
+<td>throwaway <code>debian:trixie</code> container + live-build (<code>builder-amd64/</code>)</td>
+</tr>
+</tbody>
+</table>
+<p>The shared parts (services, webapp, stack, disk management, Cockpit page) are <strong>byte-for-byte
+identical</strong> in the two scripts.</p>
+<pre><code>1st BOOT
+  egos-sshkeys ........ unique SSH keys per box
+  egos-growroot ....... (Pi only) partition grown
+  egos-pool ........... mergerfs pool on /srv/egos/local
+  first-boot-setup
+    └► setup-webapp.sh └► webapp.py :80 └► user └► reboot
+
+2nd BOOT
+  egos-pool └► docker, smbd
+  docker-compose-startup
+    └► deploy-compose.sh └► dirtree.sh └► wizardall2.sh
+  egos-pool-guard ..... Jellyfin off if a disk is missing
+
+ALWAYS
+  udev &quot;egos-data*&quot; └► egos-reattach
+    └► egos-storage _autoreattach
+</code></pre>
+<h2>Building the images</h2>
+<p><strong>amd64</strong> (from any Linux with docker or podman): a throwaway container builds the ISO in its own
+filesystem and hands back only the ISO and the log.</p>
+<pre><code>builder-amd64/build-iso.sh                 # -&gt; ./out/egos-&lt;version&gt;-amd64.iso
+ENGINE=podman builder-amd64/build-iso.sh   # force podman
+</code></pre>
+<p>By hand, with podman:</p>
+<pre><code>mkdir -p ~/egos-amd64 &amp;&amp; cd ~/egos-amd64        # the script only
+sudo podman run -it --rm --privileged --network=host \
+  -v &quot;$PWD:/build:Z&quot; -w /build debian:trixie bash
+apt-get update &amp;&amp; apt-get install -y live-build curl ca-certificates gnupg
+bash EgOS4-amd64.sh 2&gt;&amp;1 | tee /build/build.log
+</code></pre>
+<p>To rebuild by hand, run <code>lb clean</code> first (not needed with <code>builder-amd64/</code>).</p>
+<p><strong>arm64</strong> (from any Linux with docker or podman): the same throwaway-container approach. The container
+works in an ext4 loop file and registers the arm64 emulation (qemu, binfmt) only for the duration of the build.</p>
+<pre><code>builder-arm64-raspPi/build-img.sh          # -&gt; ./out/egos-&lt;version&gt;-arm64.img
+</code></pre>
+<p>By hand (WSL2 Debian 13, folder on the WSL ext4, never <code>/mnt/c</code>):</p>
+<pre><code>sudo apt-get install -y mmdebstrap arch-test qemu-user qemu-user-binfmt \
+    e2fsprogs dosfstools mtools fdisk curl ca-certificates
+sudo bash EgOS4-arm64.sh 2&gt;&amp;1 | tee build.log
+KEEP_ROOTFS=1 sudo -E bash EgOS4-arm64.sh       # quick rebuild
+</code></pre>
+<p>Both scripts <strong>stop with an error</strong> if a check fails: apt key fingerprints, critical packages missing
+or scheduled for removal, a second network manager, SSH keys in the image, missing files, unpinned
+versions.</p>
+<h2>Versions</h2>
+<p>Every change that ends up in the image bumps <code>EGOS_VERSION</code> (in both scripts). The installed system
+records the build data in <code>/etc/egos-release</code>. Docker images are pinned: Immich <code>v3.2.2</code>,
+Jellyfin <code>12.1</code>, Valkey and Postgres by digest.</p>
+<h1 id="ch-where-things-are">Where things are</h1>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/srv/egos/pool/media/</code></td>
+<td>Films, Musics, SerieTv, ROMs, downloads (Jellyfin, Samba, qbtt)</td>
+</tr>
+<tr>
+<td><code>/srv/egos/pool/immich/upload/</code></td>
+<td>Immich originals</td>
+</tr>
+<tr>
+<td><code>/srv/egos/local/</code></td>
+<td>pool branch on the system disk</td>
+</tr>
+<tr>
+<td><code>/srv/egos/disks/dataN/</code></td>
+<td>data disks (ext4, label <code>egos-dataN</code>)</td>
+</tr>
+<tr>
+<td><code>~/app/repos/</code></td>
+<td><code>docker-compose.yml</code>, <code>.env</code>, wizard and JSON files</td>
+</tr>
+<tr>
+<td><code>~/app/repos/egos-home/</code></td>
+<td>home page: <code>home.py</code>, <code>docker-proxy.cfg</code>, <code>icons/</code></td>
+</tr>
+<tr>
+<td><code>~/app/immich/postgres/</code></td>
+<td>Immich database (<strong>always</strong> on the system disk)</td>
+</tr>
+<tr>
+<td><code>~/app/jellyfin/{config,cache}/</code></td>
+<td>Jellyfin configuration</td>
+</tr>
+<tr>
+<td><code>/usr/local/share/stack/</code></td>
+<td>original files of the stack and the extras</td>
+</tr>
+<tr>
+<td><code>/var/log/egos-storage/job.log</code></td>
+<td>log of the last disk operation</td>
+</tr>
+</tbody>
+</table>
+<h2>State files</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/var/lib/setup-data.json</code></td>
+<td>setup form data (holds the password in plain text)</td>
+</tr>
+<tr>
+<td><code>/var/lib/setup-complete</code></td>
+<td>setup done: the webapp does not start again</td>
+</tr>
+<tr>
+<td><code>/var/lib/docker-compose-done</code></td>
+<td>stack prepared: the deploy does not run again</td>
+</tr>
+<tr>
+<td><code>/var/lib/egos-growroot-done</code></td>
+<td>(Pi) partition already grown</td>
+</tr>
+<tr>
+<td><code>/run/egos/pool-degraded</code></td>
+<td>list of the missing disks</td>
+</tr>
+<tr>
+<td><code>/run/egos/pool-ok</code></td>
+<td>present only when the pool is complete (Jellyfin does not start without it)</td>
+</tr>
+<tr>
+<td><code>/var/lib/egos/jellyfin-held</code></td>
+<td>Jellyfin held stopped by EgOS</td>
+</tr>
+<tr>
+<td><code>/run/egos/storage.lock</code></td>
+<td>lock for disk operations</td>
+</tr>
+<tr>
+<td><code>/etc/fstab.egos-prev</code></td>
+<td>fstab before the last change</td>
+</tr>
+</tbody>
+</table>
+<p>To <strong>redo</strong> the 2nd-boot preparation: <code>sudo rm /var/lib/docker-compose-done &amp;&amp; sudo systemctl enable docker-compose-startup</code> and reboot.</p>
+<blockquote class="box note">
+<p><strong class="box-title">Note</strong> — Since 4.2.2 <code>wizardall2.sh</code> can be re-run: once Jellyfin's startup wizard is complete it
+skips it (the <code>/Startup/*</code> APIs answer 401 then) instead of waiting forever.</p>
+</blockquote>
+<h2>Network</h2>
+<p>One manager only: <strong>systemd-networkd</strong> (DHCP on <code>eth*</code>/<code>en*</code>) with <strong>systemd-resolved</strong>. mDNS is
+handled by avahi, Windows discovery by wsdd2. Wi-Fi is used only for the first-boot access point.</p>
+<table>
+<thead>
+<tr>
+<th>Port</th>
+<th>Service</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>22</td>
+<td>SSH</td>
+</tr>
+<tr>
+<td>80</td>
+<td>setup webapp (1st boot only)</td>
+</tr>
+<tr>
+<td>139, 445</td>
+<td>Samba</td>
+</tr>
+<tr>
+<td>2283</td>
+<td>Immich</td>
+</tr>
+<tr>
+<td>8000</td>
+<td>home page (egos-home)</td>
+</tr>
+<tr>
+<td>8096/tcp, 7358/udp</td>
+<td>Jellyfin</td>
+</tr>
+<tr>
+<td>9090</td>
+<td>Cockpit</td>
+</tr>
+<tr>
+<td>8080, 8082, 8083, 6881</td>
+<td>optional extras</td>
+</tr>
+</tbody>
+</table>
+<h1 id="ch-security-and-known-limits">Security and known limits</h1>
+<p>What to know about the security of version 4.3.0 and about what EgOS does not handle yet.</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Status</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fixed root password, the same on every box, written in the scripts (preseed / mmdebstrap hook)</td>
+<td><strong>open</strong></td>
+<td>after installing: <code>sudo passwd root</code> or <code>sudo passwd -l root</code></td>
+</tr>
+<tr>
+<td>Unique SSH keys per box</td>
+<td><strong>solved</strong> (4.0)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Web setup without authentication, AP with a public password</td>
+<td>open</td>
+<td>do the first boot in a trusted environment</td>
+</tr>
+<tr>
+<td><code>setup-data.json</code> keeps the password in plain text</td>
+<td>open (<code>.env</code> already 0600)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>One password for system, Samba, Immich, Jellyfin, Cockpit</td>
+<td>open</td>
+<td>change each service's password from its own interface</td>
+</tr>
+<tr>
+<td>Security updates</td>
+<td>partial: Docker repository kept (4.0), no <code>unattended-upgrades</code></td>
+<td><code>sudo apt update &amp;&amp; sudo apt upgrade</code> regularly</td>
+</tr>
+<tr>
+<td>No firewall</td>
+<td>open</td>
+<td>restrict 22/445/9090 to the LAN</td>
+</tr>
+<tr>
+<td><code>DB_PASSWORD=password</code> for the Immich database (not exposed on any port)</td>
+<td>open</td>
+<td>—</td>
+</tr>
+<tr>
+<td>SSH with password, <code>X11Forwarding yes</code>, no fail2ban</td>
+<td>open</td>
+<td>key-only access, <code>X11Forwarding no</code></td>
+</tr>
+<tr>
+<td>Samba/wsdd2/LLMNR also listening on the Docker bridges</td>
+<td>open</td>
+<td><code>interfaces</code> + <code>bind interfaces only</code> in <code>smb.conf</code></td>
+</tr>
+<tr>
+<td>Immich database backup</td>
+<td>missing</td>
+<td>schedule a <code>pg_dump</code> to the pool</td>
+</tr>
+<tr>
+<td>fstab written atomically and validated</td>
+<td><strong>solved</strong> (4.0)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Home page reads Docker</td>
+<td><strong>limited</strong> (4.3): through a proxy on 127.0.0.1:23750 that allows only <code>GET /containers/json</code> (names, images, ports, labels; no environment variables, logs or commands)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Disk unplugged <strong>while</strong> the box is running</td>
+<td>not handled</td>
+<td>the mount stays "dead" until reattach or reboot</td>
+</tr>
+</tbody>
+</table>
+<h1 id="ch-release-notes">Release notes</h1>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Date</th>
+<th>Main changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>4.3.0</strong></td>
+<td>2026-11-03</td>
+<td>home page <strong>egos-home</strong> on <code>:8000</code> in the base stack: one card per container, read from Docker through a proxy that allows only the container list</td>
+</tr>
+<tr>
+<td>4.2.3</td>
+<td>2026-10-29</td>
+<td>qbt-sort warning file in English (<code>POTENTIALLY HARMFUL</code>)</td>
+</tr>
+<tr>
+<td>4.2.2</td>
+<td>2026-10-29</td>
+<td><code>wizardall2.sh</code> can be re-run (skips Jellyfin's startup wizard once completed)</td>
+</tr>
+<tr>
+<td>4.2.1</td>
+<td>2026-10-29</td>
+<td><strong>automatic</strong> reattach when a disk is plugged back in; operation lock; missing-disk warning on Cockpit Overview and at SSH login</td>
+</tr>
+<tr>
+<td>4.2.0</td>
+<td>2026-10-28</td>
+<td>pool present from the first boot; <code>drain</code>; 60 s wait and degraded boot; Jellyfin gate; immutable mount points</td>
+</tr>
+<tr>
+<td>4.1.0</td>
+<td>2026-10-28</td>
+<td>Cockpit <strong>Storage pool</strong> page; non-interactive mode and jobs in <code>egos-storage</code></td>
+</tr>
+<tr>
+<td>4.0.0</td>
+<td>2026-10-28</td>
+<td>PC and Raspberry Pi editions aligned; versioning; sudo, SSH, Cockpit, mergerfs; networkd only; NTP; verified Docker keys; optional extras</td>
+</tr>
+</tbody>
+</table>
+<div class="part-page"><div class="part-num">Part III</div><div class="part-name">Technical reference</div></div>
+<h1 class="part-start" data-part="Part III — Technical reference" id="reference">Scripts and functions</h1>
+<p class="lead">Every script of the project, with its functions. This is the collection of the documents in the <code>docs/scripts/</code> folder: the same material is there, one file per script.</p>
+<h2 class="group" id="group-build-scripts">Build scripts</h2>
+<section class="script"><h2 class="script-title" id="script-egos4-arm64">EgOS4-arm64.sh</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Type</strong></td>
+<td>build script, self-contained</td>
+</tr>
+<tr>
+<td><strong>Path</strong></td>
+<td><code>builder-arm64-raspPi/EgOS4-arm64.sh</code></td>
+</tr>
+<tr>
+<td><strong>Output</strong></td>
+<td><code>egos-&lt;version&gt;-arm64.img</code>: an <strong>already installed</strong> image (not an installer: the Pi 5 does not boot ISO/GRUB and d-i does not support it)</td>
+</tr>
+<tr>
+<td><strong>Hardware</strong></td>
+<td>Raspberry Pi 5 (8 GB) + NVMe</td>
+</tr>
+<tr>
+<td><strong>Base</strong></td>
+<td>Debian 13 "trixie" arm64, kernel <code>linux-image-rpi-v8</code> (4K pages)</td>
+</tr>
+<tr>
+<td><strong>Version</strong></td>
+<td><code>EGOS_VERSION=4.3.0</code>, Immich <code>v3.2.2</code>, Jellyfin <code>12.1</code></td>
+</tr>
+<tr>
+<td><strong>Role</strong></td>
+<td><strong>reference</strong> for the shared parts: sections 5b–11 and the shared part of 11b are identical in <code>EgOS4-amd64.sh</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Build environment</h3>
+<p>Recommended: throwaway container from any Linux host with docker or podman, see <a href="#script-builder">builder.md</a>.</p>
+<pre><code class="language-bash">builder-arm64-raspPi/build-img.sh      # from the repository root -&gt; ./out/egos-&lt;version&gt;-arm64.img
+</code></pre>
+<p>By hand: WSL2 Debian 13 (x86_64) with arm64 emulation through qemu.</p>
+<pre><code class="language-bash">mkdir -p ~/egos-arm64 &amp;&amp; cd ~/egos-arm64      # this script only, on the WSL ext4 (NEVER /mnt/c)
+sudo apt-get update
+sudo apt-get install -y mmdebstrap arch-test qemu-user qemu-user-binfmt \
+    e2fsprogs dosfstools mtools fdisk curl ca-certificates
+sudo bash EgOS4-arm64.sh 2&gt;&amp;1 | tee build.log
+KEEP_ROOTFS=1 sudo -E bash EgOS4-arm64.sh     # reuses rootfs/ (skips mmdebstrap, ~11 min)
+</code></pre>
+<p><strong>Writing to the NVMe</strong>: from Windows with Raspberry Pi Imager → "Use custom" →
+<code>\\wsl.localhost\&lt;distro&gt;\home\&lt;user&gt;\egos-arm64\egos-4.3.0-arm64.img</code> (NVMe through a USB adapter), or <code>dd</code>
+from a native Linux. In the Pi 5 EEPROM <code>BOOT_ORDER</code> must include <code>6</code> (NVMe): <code>rpi-eeprom-config</code>.</p>
+<h3>Resulting flow</h3>
+<pre><code>1st boot → egos-growroot (grows the partition) → first-boot-setup.service
+           → webapp :80 → setup-data.json → user → REBOOT
+2nd boot → time-sync + DNS → docker-compose-startup.service
+           → dirtree.sh → wizardall2.sh                        (egocenter.local)
+</code></pre>
+<h3>Global variables</h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>W</code></td>
+<td>the script's folder</td>
+</tr>
+<tr>
+<td><code>ROOT</code> / <code>OVL</code> / <code>KEYS</code></td>
+<td><code>rootfs/</code>, <code>overlay/</code>, <code>keys/</code></td>
+</tr>
+<tr>
+<td><code>EGOS_VERSION</code>, <code>IMMICH_VERSION</code>, <code>JELLYFIN_VERSION</code>, <code>BUILD_DATE</code></td>
+<td>as in amd64</td>
+</tr>
+<tr>
+<td><code>IMG</code></td>
+<td><code>egos-&lt;version&gt;-arm64.img</code></td>
+</tr>
+<tr>
+<td><code>LABELID</code></td>
+<td><code>45474f53</code> ("EGOS"): <code>PARTUUID=45474f53-01</code> (boot) and <code>-02</code> (root)</td>
+</tr>
+<tr>
+<td><code>BOOT_MB</code></td>
+<td>512</td>
+</tr>
+<tr>
+<td><code>KEEP_ROOTFS</code></td>
+<td><code>1</code> = reuse the existing rootfs</td>
+</tr>
+</tbody>
+</table>
+<p>Initial checks: run as root; the folder must be on ext2/3/4 (not DrvFs <code>/mnt/c</code>, which loses owners and
+permissions); commands <code>mmdebstrap arch-test mke2fs mkfs.vfat mcopy sfdisk curl gpg</code>.</p>
+<h3>Sections</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Section</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Emulation</td>
+<td>if the host is not aarch64: mounts <code>binfmt_misc</code>, restarts <code>systemd-binfmt</code> (or runs it by hand if WSL has no systemd), checks with <code>arch-test arm64</code></td>
+</tr>
+<tr>
+<td>1</td>
+<td>apt keys</td>
+<td>Raspberry Pi key taken from pi-gen (re-signed SHA-512: the one from archive.raspberrypi.com uses SHA-1 signatures rejected by apt 3.x since 2026-02-01) with fingerprint <code>CF8A…303E</code>; Docker key with fingerprint <code>9DC8…CD88</code>. Also copied to the host</td>
+</tr>
+<tr>
+<td>5b–11a</td>
+<td>Shared</td>
+<td>identical to amd64: <code>/etc/issue</code>, avahi, services, <code>setup-webapp.sh</code>, <code>webapp.py</code>, <code>deploy-compose.sh</code>, <code>dirtree.sh</code>, stack, <code>/etc/egos-release</code>, extras</td>
+</tr>
+<tr>
+<td>11b</td>
+<td>Pi-specific + shared</td>
+<td>hostapd patch for <code>brcmfmac</code> (mandatory country code, rfkill), banner, <code>egos-storage</code> and units, Cockpit page, network, NTP, <strong><code>egos-growroot</code></strong>, <code>egos-sshkeys</code>, <code>config.txt</code>, <code>cmdline.txt</code>, <code>fstab</code></td>
+</tr>
+<tr>
+<td>12</td>
+<td>rootfs</td>
+<td><code>mmdebstrap --variant=important</code> with the packages (below); hooks: copy the overlay, install cockpit without Recommends, purge <code>ifupdown dhcpcd-base dmidecode</code>, hostname <code>egocenter</code>, <code>/etc/hosts</code>, time zone <code>Europe/Rome</code>, locale <code>it_IT.UTF-8</code>, keyboard <code>it</code>, root password, <code>docker</code> group, enable the services, disable hostapd/dnsmasq, remove the SSH keys, <code>resolv.conf</code> → stub, empty <code>machine-id</code>. Then: Docker key in the final system (security updates), aliases in <code>/etc/skel/.bashrc</code></td>
+</tr>
+<tr>
+<td>13</td>
+<td>Kernel</td>
+<td>finds the <code>*-rpi-v8</code> kernel, temporarily disables the <code>z50-raspi-firmware</code> hook (it needs <code>/boot/firmware</code> mounted), generates the initramfs, copies <code>kernel8.img</code>, <code>initramfs8</code>, the <code>bcm2712*</code> DTBs and the overlays into <code>/boot/firmware</code></td>
+</tr>
+<tr>
+<td>14</td>
+<td>Checks</td>
+<td>critical packages (also <code>linux-image-rpi-v8</code>), no second network manager, release, pinned versions, no SSH keys, <code>egos-sshkeys</code> enabled, <code>resolv.conf</code> link, aliases, Cockpit page, reattach, pool units, stack on the pool</td>
+</tr>
+<tr>
+<td>15</td>
+<td>Image</td>
+<td><strong>without loop devices</strong>: <code>mkfs.vfat -C</code> for the boot partition (512 MB, <code>EGOSBOOT</code>) filled with <code>mcopy</code>; <code>mke2fs -d</code> for the root (<code>EGOSROOT</code>, size = rootfs × 1.3 + 512 MB); <code>sfdisk</code> with a DOS table and fixed label-id; <code>dd</code> of the two partitions into the image; label-id check</td>
+</tr>
+</tbody>
+</table>
+<h4>Packages (section 12)</h4>
+<p><code>systemd-sysv systemd-resolved systemd-timesyncd dbus udev kmod locales keyboard-configuration console-setup tzdata
+initramfs-tools linux-image-rpi-v8 raspi-firmware firmware-brcm80211 wireless-regdb rfkill cloud-guest-utils e2fsprogs
+dosfstools zstd hostapd dnsmasq avahi-daemon python3 iptables iw curl ca-certificates samba wsdd2 sudo htop nano less
+lsof rsync openssh-server mergerfs parted attr net-tools progress git python3-requests docker-ce docker-ce-cli
+containerd.io docker-buildx-plugin docker-compose-plugin</code> + <code>cockpit-ws cockpit-bridge cockpit-system</code>.</p>
+<p>Repositories: Debian trixie and trixie-security, <code>archive.raspberrypi.com</code>, Docker.</p>
+<h4>Boot files</h4>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/boot/firmware/config.txt</code></td>
+<td><code>arm_64bit=1</code>, <code>kernel=kernel8.img</code> (4K pages: compatibility with arm64 Docker images that use jemalloc), <code>auto_initramfs=1</code>, <code>dtparam=pciex1</code> (NVMe HAT without HAT+ EEPROM)</td>
+</tr>
+<tr>
+<td><code>/boot/firmware/cmdline.txt</code></td>
+<td><code>console=serial0,115200 console=tty1 root=PARTUUID=45474f53-02 rootfstype=ext4 fsck.repair=yes rootwait</code></td>
+</tr>
+<tr>
+<td><code>/etc/fstab</code></td>
+<td>root <code>PARTUUID=…-02</code> ext4 <code>noatime</code>; boot <code>PARTUUID=…-01</code> vfat</td>
+</tr>
+</tbody>
+</table>
+<h3>Differences from amd64</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>amd64</th>
+<th>arm64</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Output</td>
+<td>ISO + installer</td>
+<td>ready-made image</td>
+</tr>
+<tr>
+<td>Build</td>
+<td>throwaway <code>debian:trixie</code> container + live-build</td>
+<td>throwaway <code>debian:trixie</code> container (or WSL2) + mmdebstrap + qemu-user</td>
+</tr>
+<tr>
+<td>Docker</td>
+<td><code>.deb</code> files downloaded and installed locally</td>
+<td>apt repository during mmdebstrap</td>
+</tr>
+<tr>
+<td>First boot</td>
+<td>—</td>
+<td><code>egos-growroot</code> grows the root</td>
+</tr>
+<tr>
+<td>Hostname/locale</td>
+<td>from the d-i preseed</td>
+<td>from the mmdebstrap hooks</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<p>No functions of its own in the script; the function in <code>egos-growroot.sh</code> is described in
+<a href="#script-egos-growroot">egos-growroot.md</a>.</p></section>
+<section class="script"><h2 class="script-title" id="script-egos4-amd64">EgOS4-amd64.sh</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Type</strong></td>
+<td>build script, self-contained (no external files)</td>
+</tr>
+<tr>
+<td><strong>Path</strong></td>
+<td><code>builder-amd64/EgOS4-amd64.sh</code></td>
+</tr>
+<tr>
+<td><strong>Output</strong></td>
+<td><code>egos-&lt;version&gt;-amd64.iso</code> (live-build <code>iso-hybrid</code>, d-i installer in "live" mode, unattended)</td>
+</tr>
+<tr>
+<td><strong>Base</strong></td>
+<td>Debian 13 "trixie" amd64</td>
+</tr>
+<tr>
+<td><strong>Version</strong></td>
+<td><code>EGOS_VERSION=4.3.0</code>, Immich <code>v3.2.2</code>, Jellyfin <code>12.1</code></td>
+</tr>
+<tr>
+<td><strong>Lines</strong></td>
+<td>~4150</td>
+</tr>
+<tr>
+<td><strong>Twin</strong></td>
+<td><a href="#script-egos4-arm64">EgOS4-arm64.md</a>: sections 5b–11 and the shared part of 11b are <strong>copied verbatim</strong> from <code>EgOS4-arm64.sh</code>. They are edited there and then copied here.</td>
+</tr>
+</tbody>
+</table>
+<h3>Usage</h3>
+<p>Recommended: throwaway container, see <a href="#script-builder">builder.md</a>.</p>
+<pre><code class="language-bash">builder-amd64/build-iso.sh      # from the repository root -&gt; ./out/egos-&lt;version&gt;-amd64.iso
+</code></pre>
+<p>By hand:</p>
+<pre><code class="language-bash"># on the Linux host with podman, folder holding ONLY this script
+mkdir -p ~/egos-amd64 &amp;&amp; cd ~/egos-amd64
+sudo podman run -it --rm --privileged --network=host \
+  -v &quot;$PWD:/build:Z&quot; -w /build debian:trixie bash
+# inside the container
+apt-get update &amp;&amp; apt-get install -y live-build curl ca-certificates gnupg
+bash EgOS4-amd64.sh 2&gt;&amp;1 | tee /build/build.log
+</code></pre>
+<p>To rebuild by hand: <code>lb clean</code> in the same folder before running again (not needed with <code>builder-amd64/</code>). At the end: <code>sudo chown $USER:$USER egos-*.iso</code>.</p>
+<h3>Resulting flow</h3>
+<pre><code>USB → automatic d-i installation → power off (remove the USB stick)
+1st boot → egos-sshkeys → first-boot-setup.service → webapp :80 (setupbox.local)
+           → credentials → Linux user → REBOOT
+2nd boot → time-sync + DNS → docker-compose-startup.service
+           → dirtree.sh → wizardall2.sh                        (egocenter.local)
+</code></pre>
+<h3>Global variables</h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>EGOS_VERSION</code></td>
+<td>bumped on every change that ends up in the image</td>
+</tr>
+<tr>
+<td><code>IMMICH_VERSION</code>, <code>JELLYFIN_VERSION</code></td>
+<td>pinned Docker image tags</td>
+</tr>
+<tr>
+<td><code>BUILD_DATE</code></td>
+<td>UTC build date, written to <code>/etc/egos-release</code></td>
+</tr>
+<tr>
+<td><code>ISO</code></td>
+<td>name of the final file</td>
+</tr>
+<tr>
+<td><code>OVL</code></td>
+<td><code>config/includes.chroot</code>: root of the files copied into the system (same name as in the arm64 script)</td>
+</tr>
+<tr>
+<td><code>KEYS</code></td>
+<td>folder for the apt keys</td>
+</tr>
+</tbody>
+</table>
+<p>First of all the script checks that <code>lb curl gpg apt-get</code> exist.</p>
+<h3>Sections</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Section</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>lb config</code></td>
+<td>trixie, amd64, d-i "live", areas <code>main contrib non-free non-free-firmware</code>, firmware in chroot and binary, hybrid ISO, volume <code>EGOS_4_2_3</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>Docker key</td>
+<td>downloads the key, converts it (<code>gpg --dearmor</code>) and <strong>checks the fingerprint</strong> <code>9DC8 5822 9FC7 DD38 854A E2D8 8D81 803C 0EBF CD88</code> (error 2 if missing). Puts it in the overlay and prepares <code>docker.list</code> in <code>/usr/local/share/egos/apt/</code> (copied into the system by <code>late_command</code>, not used during the build)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Preseed</td>
+<td><code>config/includes.installer/preseed.cfg</code>, see below</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Package list</td>
+<td><code>egos.list.chroot</code>: systemd-resolved/timesyncd, hostapd, dnsmasq, avahi, python3(+requests), iptables, iw, rfkill, wireless-regdb, curl, samba, wsdd2, sudo, openssh-server, htop, nano, less, lsof, rsync, mergerfs, parted, attr, net-tools, progress, git, zstd, cockpit-ws/bridge/system</td>
+</tr>
+<tr>
+<td>4b</td>
+<td>Docker .debs</td>
+<td>adds the Docker repo <strong>in the build container</strong>, downloads <code>docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin</code> into <code>config/packages.chroot/</code> (renames <code>%3a</code> to <code>.</code>)</td>
+</tr>
+<tr>
+<td>4c</td>
+<td>Chroot hook <code>0400-egos</code></td>
+<td>see <a href="#script-hook-live-build">hook-live-build.md</a></td>
+</tr>
+<tr>
+<td>5</td>
+<td>Binary hook <code>0500-bootloader-default</code></td>
+<td>installer as the default entry, 5 s timeout, BIOS and UEFI</td>
+</tr>
+<tr>
+<td>5b</td>
+<td>Console and mDNS</td>
+<td><code>/etc/issue</code> (URLs and IP on the login screen), <code>avahi-daemon.conf</code> with the temporary name <code>setupbox</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td>Services</td>
+<td><code>first-boot-setup.service</code>, <code>docker-compose-startup.service</code></td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>setup-webapp.sh</code></td>
+<td>see <a href="#script-setup-webapp">setup-webapp.md</a></td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>webapp.py</code></td>
+<td>see <a href="#script-webapp-py">webapp-py.md</a></td>
+</tr>
+<tr>
+<td>9</td>
+<td><code>deploy-compose.sh</code></td>
+<td>see <a href="#script-deploy-compose">deploy-compose.md</a></td>
+</tr>
+<tr>
+<td>10</td>
+<td><code>dirtree.sh</code></td>
+<td>see <a href="#script-dirtree">dirtree.md</a></td>
+</tr>
+<tr>
+<td>11</td>
+<td>Stack staging</td>
+<td><code>/usr/local/share/stack/</code>: <code>docker-compose.yml</code>, <code>egos-home/</code> (since 4.3), <code>wizardall2.sh</code>, <code>jellsrv.json</code>, <code>jellremot.json</code>, <code>env.template</code> (with the versions substituted) + <code>/etc/egos-release</code>. See <a href="#script-stack-configuration">stack-configuration.md</a></td>
+</tr>
+<tr>
+<td>11a</td>
+<td>Optional extras</td>
+<td><code>/usr/local/share/stack/extras/{qbtt,bento}</code> + <code>egos-extras</code>. Not started. See <a href="#script-egos-extras">egos-extras.md</a></td>
+</tr>
+<tr>
+<td>11b</td>
+<td>Shared overlays</td>
+<td>hostapd patch (<code>country_code=IT</code>, <code>ieee80211d=1</code>, <code>rfkill unblock wlan</code>, checked with grep), extra lines in <code>/etc/issue</code>, <code>egos-storage</code>, aliases, pool/guard/reattach units, udev rule, empty <code>/etc/motd</code>, docker/smbd drop-ins, Cockpit page, networkd/resolved network, NTP wait, <code>egos-sshkeys.service</code></td>
+</tr>
+<tr>
+<td>12</td>
+<td>Build</td>
+<td><code>lb build</code></td>
+</tr>
+<tr>
+<td>13</td>
+<td>Checks</td>
+<td>see below; then renames <code>live-image-amd64.hybrid.iso</code> to <code>$ISO</code></td>
+</tr>
+</tbody>
+</table>
+<h4>Preseed (section 3)</h4>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Setting</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Language/keyboard</td>
+<td><code>it_IT.UTF-8</code>, keyboard <code>it</code> pc105</td>
+</tr>
+<tr>
+<td>Network</td>
+<td>automatic interface, hostname <code>egocenter</code>, domain <code>lan</code> (not <code>local</code>: that is the mDNS domain and would cause a false avahi conflict)</td>
+</tr>
+<tr>
+<td>Mirror</td>
+<td><code>deb.debian.org</code></td>
+</tr>
+<tr>
+<td>Clock</td>
+<td>UTC, <code>Europe/Rome</code>, <strong>NTP on</strong> (the TLS pulls of the 2nd boot need it)</td>
+</tr>
+<tr>
+<td>Partitioning</td>
+<td><code>regular</code>, <code>atomic</code> recipe, no confirmation. With several disks d-i asks for the target disk</td>
+</tr>
+<tr>
+<td>Accounts</td>
+<td>root login enabled with a fixed password (see <em>Known issues</em>), no regular user (the webapp creates it)</td>
+</tr>
+<tr>
+<td>Packages</td>
+<td>no tasks, <code>full-upgrade</code> only: everything is already in the squashfs</td>
+</tr>
+<tr>
+<td>Bootloader</td>
+<td>GRUB on the default disk</td>
+</tr>
+<tr>
+<td><code>late_command</code></td>
+<td>removes <code>ifupdown dhcpcd-base isc-dhcp-client network-manager</code> and <code>/etc/network/interfaces</code>; enables networkd, resolved, timesyncd, time-wait-sync, avahi, wsdd2, docker, cockpit.socket, egos-sshkeys, first-boot-setup, docker-compose-startup, egos-pool, egos-pool-guard, ssh; disables hostapd/dnsmasq; creates the <code>docker</code> group; deletes the SSH host keys; copies <code>docker.list</code>; <code>resolv.conf</code> → resolved stub</td>
+</tr>
+<tr>
+<td>End</td>
+<td>no final message, <strong>power off</strong></td>
+</tr>
+</tbody>
+</table>
+<h4>Final checks (section 13)</h4>
+<p>The build fails if:</p>
+<ul>
+<li>one of the critical packages is not installed in the chroot (<code>docker-ce containerd.io docker-compose-plugin samba wsdd2 hostapd dnsmasq avahi-daemon cockpit-ws sudo openssh-server htop rsync mergerfs parted attr git python3-requests systemd-resolved</code>);</li>
+<li>a second network manager is installed (<code>network-manager modemmanager wpasupplicant ppp ifupdown dhcpcd-base</code>);</li>
+<li>there are SSH host keys in the squashfs;</li>
+<li><code>/etc/egos-release</code> is missing or has a different version;</li>
+<li>the aliases in <code>/etc/skel/.bashrc</code>, the Cockpit page files, the udev rule or <code>egos-reattach.service</code>, or the pool/guard units are missing;</li>
+<li><code>env.template</code> does not point to the pool or has no pinned versions;</li>
+<li><strong>anti-purge</strong>: a critical package appears in <code>binary/live/filesystem.packages-remove</code> (d-i would uninstall it at the end of the installation: it happened with cockpit installed by a hook).</li>
+</ul>
+<h3>Functions defined in the script itself</h3>
+<p>The main script defines no functions of its own: it is a linear sequence of sections. The functions live in the
+scripts it generates (see the other documents in this folder).</p></section>
+<section class="script"><h2 class="script-title" id="script-builder">Builders — building the ISO and the Pi image in throwaway containers</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>amd64</th>
+<th>arm64 (Raspberry Pi 5)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Folder</strong></td>
+<td><code>builder-amd64/</code></td>
+<td><code>builder-arm64-raspPi/</code></td>
+</tr>
+<tr>
+<td><strong>Build script</strong></td>
+<td><code>EgOS4-amd64.sh</code></td>
+<td><code>EgOS4-arm64.sh</code></td>
+</tr>
+<tr>
+<td><strong>Host command</strong></td>
+<td><code>build-iso.sh</code></td>
+<td><code>build-img.sh</code></td>
+</tr>
+<tr>
+<td><strong>Container image</strong></td>
+<td><code>egos-builder</code>: <code>debian:trixie</code> + <code>live-build curl ca-certificates gnupg</code></td>
+<td><code>egos-builder-arm64</code>: <code>debian:trixie</code> + <code>mmdebstrap arch-test qemu-user qemu-user-binfmt e2fsprogs dosfstools mtools fdisk curl ca-certificates gnupg util-linux</code></td>
+</tr>
+<tr>
+<td><strong>Output</strong></td>
+<td><code>OUT/egos-&lt;version&gt;-amd64.iso</code> + <code>OUT/build.log</code></td>
+<td><code>OUT/egos-&lt;version&gt;-arm64.img</code> + <code>OUT/build.log</code></td>
+</tr>
+<tr>
+<td><strong>Time</strong></td>
+<td>~6 min</td>
+<td>~10 min (arm64 emulated)</td>
+</tr>
+<tr>
+<td><strong>Requirements</strong></td>
+<td>Linux with docker (daemon running) or podman; <code>sudo</code></td>
+<td>the same + the host's <code>loop</code> module, ~30 GB of sparse space in the engine's storage</td>
+</tr>
+</tbody>
+</table>
+<h3>Usage</h3>
+<pre><code class="language-bash"># from the repository root
+builder-amd64/build-iso.sh                  # -&gt; ./out/egos-&lt;version&gt;-amd64.iso
+builder-arm64-raspPi/build-img.sh ~/img     # output folder of your choice
+ENGINE=podman builder-amd64/build-iso.sh    # force podman (default: docker if the daemon answers)
+SCRIPT=/other/EgOS4-amd64.sh builder-amd64/build-iso.sh
+</code></pre>
+<p>Each host command stops if the output folder already holds an ISO/image, so as not to overwrite it.</p>
+<h3>How it works (both)</h3>
+<ol>
+<li><code>docker build --network=host</code> (or <code>podman build</code>) creates the builder image from the folder's <code>Dockerfile</code>. It holds only
+   the tools; it is rebuilt from the layer cache. <code>.dockerignore</code> keeps the build script out of the image.</li>
+<li><code>docker run --rm --privileged --network=host</code> starts a throwaway container with:
+   - the build script mounted <strong>read-only</strong> at <code>/src</code>;
+   - the output folder mounted at <code>/out</code> (the only one shared with the host).</li>
+<li>Inside the container <code>build-in-container.sh</code> copies the script to <code>/build</code>, runs the build, copies <strong>only</strong>
+   the image and the log to <code>/out</code> and gives them to the host user.</li>
+<li>When the build ends the container is deleted: no chroot, rootfs, cache or <code>binary/</code> is left on the host
+   (about 5 GB with the manual method), so <strong>no <code>lb clean</code></strong> or <code>rm -rf rootfs</code> is needed between builds.</li>
+</ol>
+<h3>arm64 specifics (<code>builder-arm64-raspPi/build-in-container.sh</code>)</h3>
+<ul>
+<li><strong>ext4 work folder</strong>: <code>EgOS4-arm64.sh</code> refuses any work folder that is not ext2/3/4 (it guards against
+  WSL's DrvFs <code>/mnt/c</code>), and the container's own filesystem is overlayfs. The build therefore runs in a 30 GB
+  sparse <code>/work.ext4</code> file, attached to a free loop device and mounted on <code>/build</code>. <code>/dev</code> in a privileged
+  container is a snapshot taken at start, so if the kernel hands out a new loop device the script creates its
+  node with <code>mknod</code>. On exit: unmount, <code>losetup -d</code>, file deleted.</li>
+<li><strong>arm64 emulation</strong>: binfmt_misc belongs to the host kernel. If <code>qemu-aarch64</code> is not registered, the script
+  registers it from the container's <code>/usr/lib/binfmt.d/qemu-aarch64.conf</code> (flags <code>OPF</code>: the interpreter is
+  opened at registration time, so it works inside mmdebstrap's chroot) and <strong>removes it on exit</strong>. If it was
+  already registered on the host, it is left alone. Nothing is installed on the host.</li>
+<li>The build itself is the unchanged <code>EgOS4-arm64.sh</code>: section 0 finds the emulation working (<code>arch-test arm64</code>).</li>
+</ul>
+<h3>Notes</h3>
+<ul>
+<li>Both need <strong>root + <code>--privileged</code></strong>: live-build and mmdebstrap mount <code>/proc</code> and create devices in the
+  chroot; the arm64 builder also needs loop devices and binfmt_misc. A rootless engine is not enough.</li>
+<li>Every build downloads the packages again (~1 GB amd64, more for arm64).</li>
+<li>Both build and run use <strong><code>--network=host</code></strong>: on some hosts the engine's bridge network cannot reach the
+  internet (firewall/VPN dropping forwarded traffic, docker rules lost, DNS fallback blocked) and the build
+  stops at the first <code>apt-get update</code> of the Dockerfile. With the host network the builder needs only what
+  the host itself can reach.</li>
+<li>Verified on 2026-10-29: amd64 with podman and Docker 29.9.2 (ISO installed in a VM up to the setup page);
+  arm64 with Docker 29.9.2 (all section-14 checks, image contents inspected read-only; not boot-tested,
+  there is no Pi 5 emulation).</li>
+<li>The amd64 ISO also includes the udebs of the previous installer kernel (~33 MB more than the manual build
+  with a cache): the installer uses only those of its own kernel.</li>
+</ul></section>
+<section class="script"><h2 class="script-title" id="script-hook-live-build">live-build hooks (amd64 only)</h2>
+<p>Generated by <code>EgOS4-amd64.sh</code> in <code>config/hooks/normal/</code>. live-build runs them during <code>lb build</code>.</p>
+<h3>0400-egos.hook.chroot</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Section</strong></td>
+<td>4c</td>
+</tr>
+<tr>
+<td><strong>When</strong></td>
+<td>inside the chroot of the live system (= the installed system)</td>
+</tr>
+<tr>
+<td><strong>Shell</strong></td>
+<td><code>/bin/sh</code>, <code>set -e</code>, <code>DEBIAN_FRONTEND=noninteractive</code></td>
+</tr>
+</tbody>
+</table>
+<p>Steps:</p>
+<ol>
+<li>purges <code>ifupdown dhcpcd-base isc-dhcp-client network-manager</code> if installed (only systemd-networkd may manage the network);</li>
+<li>deletes <code>/etc/ssh/ssh_host_*</code> (each box generates its own at the 1st boot with <code>egos-sshkeys</code>);</li>
+<li>adds to <code>/etc/skel/.bashrc</code> the loading of <code>/etc/profile.d/egos-storage.sh</code>: Cockpit's terminal starts a
+   <strong>non-login</strong> bash, which does not read <code>/etc/profile.d</code>. The user created at setup copies <code>.bashrc</code> from <code>/etc/skel</code>.</li>
+</ol>
+<blockquote>
+<p><strong>Never</strong> <code>apt-get install</code> in this hook: packages added by a hook are not in <code>chroot.packages.install</code>,
+so live-build puts them in <code>filesystem.packages-remove</code> and d-i uninstalls them at the end of the installation
+(section 13 checks for this).</p>
+</blockquote>
+<h3>0500-bootloader-default.hook.binary</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Section</strong></td>
+<td>5</td>
+</tr>
+<tr>
+<td><strong>When</strong></td>
+<td>"binary" stage (cwd = <code>binary/</code>, with a <code>cd binary</code> fallback)</td>
+</tr>
+</tbody>
+</table>
+<p>Makes the installer the default entry with a 5-second timeout, based on the <strong>actual</strong> files generated by live-build trixie.
+Every assumption is checked: if it does not match, the build fails and prints the file.</p>
+<table>
+<thead>
+<tr>
+<th>Firmware</th>
+<th>Actions</th>
+<th>Check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BIOS (isolinux)</td>
+<td>removes <code>menu default</code> from <code>live.cfg</code>, adds it after <code>label installstart</code> in <code>install.cfg</code>, <code>timeout 50</code> (tenths of a second) in <code>isolinux.cfg</code></td>
+<td><code>label installstart</code> exists, <code>timeout 50</code> present</td>
+</tr>
+<tr>
+<td>UEFI (GRUB)</td>
+<td>appends <code>set default="Start installer"</code> and <code>set timeout=5</code> to <code>grub.cfg</code> (the last <code>set</code> wins)</td>
+<td><code>menuentry 'Start installer'</code> present in <code>install_start.cfg</code> (grep independent of the quotes)</td>
+</tr>
+</tbody>
+</table>
+<p>Messages: <code>0500 BIOS ok: default=installstart, timeout 5s</code> and <code>0500 UEFI ok: …</code>; errors <code>ERROR 0500: …</code>.</p></section>
+<h2 class="group" id="group-first-and-second-boot">First and second boot</h2>
+<section class="script"><h2 class="script-title" id="script-setup-webapp">setup-webapp.sh</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Path</strong></td>
+<td><code>/usr/local/bin/setup-webapp.sh</code></td>
+</tr>
+<tr>
+<td><strong>Generated by</strong></td>
+<td>section 7 of <code>EgOS4-amd64.sh</code> / <code>EgOS4-arm64.sh</code> (quoted heredoc: <code>$</code> is not expanded at build time) + the 11b patch</td>
+</tr>
+<tr>
+<td><strong>Started by</strong></td>
+<td><code>first-boot-setup.service</code>, only if <code>/var/lib/setup-complete</code> is missing</td>
+</tr>
+<tr>
+<td><strong>When</strong></td>
+<td>1st boot, once</td>
+</tr>
+</tbody>
+</table>
+<h3>Purpose</h3>
+<p>Prepares the initial setup environment, waits for the user to fill in the web form, creates the Linux user, cleans
+everything up and reboots.</p>
+<h3>Steps</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Block</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Interface detection</td>
+<td><code>WIFI</code> = first <code>wl*</code>/<code>wlan*</code> interface, <code>ETH</code> = first <code>en*</code>/<code>eth*</code> in <code>/sys/class/net</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Wi-Fi access point</strong> (only if there is a Wi-Fi card)</td>
+<td><code>rfkill unblock wlan</code> (11b patch), IP <code>192.168.50.1/24</code>; writes <code>/etc/hostapd/hostapd.conf</code>: SSID <strong><code>SetupBox</code></strong>, channel 7, 802.11g, WPA2-PSK, passphrase <code>setup1234</code>, <code>country_code=IT</code>, <code>ieee80211d=1</code> (11b patch); starts hostapd</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Portal DHCP/DNS</td>
+<td><code>/etc/dnsmasq.d/setup.conf</code>: DHCP <code>192.168.50.10–50</code>, gateway and DNS = the box, <code>address=/#/192.168.50.1</code> (<strong>every name</strong> resolves to the box → phones and PCs open the "Sign in to network" popup by themselves), <code>setupbox.local</code>; starts dnsmasq</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Redirection</td>
+<td>iptables <code>PREROUTING</code>: incoming TCP 80 and 443 from Wi-Fi → <code>192.168.50.1:80</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td>Ethernet</td>
+<td><code>ip link set $ETH up</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td>mDNS</td>
+<td><code>/etc/avahi/services/http.service</code> (<code>_http._tcp</code> port 80, name <code>SetupBox</code>), restarts avahi: reachable as <code>http://setupbox.local</code></td>
+</tr>
+<tr>
+<td>7</td>
+<td>Webapp</td>
+<td>starts <code>/usr/local/bin/webapp.py</code> in the background</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Wait</td>
+<td>loops every 2 s until <code>/var/lib/setup-data.json</code> appears, then stops the webapp</td>
+</tr>
+<tr>
+<td>9</td>
+<td>User</td>
+<td>reads <code>user</code>, <code>password</code>, <code>email</code>; <code>useradd -m -s /bin/bash</code>, <code>chpasswd</code>, groups <code>sudo</code> (or <code>wheel</code>) and <code>docker</code>; writes the email to <code>~/.email</code></td>
+</tr>
+<tr>
+<td>10</td>
+<td>Cleanup</td>
+<td>stops hostapd/dnsmasq, deletes their configuration and <code>http.service</code>; comments out <code>host-name=</code> in <code>avahi-daemon.conf</code> (from the 2nd boot the mDNS name becomes <code>egocenter.local</code>) and restarts avahi</td>
+</tr>
+<tr>
+<td>11</td>
+<td>End</td>
+<td>creates <code>/var/lib/setup-complete</code>, disables <code>first-boot-setup.service</code>, <code>systemctl reboot</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<p>None: a sequential script.</p>
+<h3>Files touched</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/etc/hostapd/hostapd.conf</code>, <code>/etc/dnsmasq.d/setup.conf</code>, <code>/etc/avahi/services/http.service</code></td>
+<td>created and then deleted</td>
+</tr>
+<tr>
+<td><code>/etc/avahi/avahi-daemon.conf</code></td>
+<td><code>host-name=</code> commented out</td>
+</tr>
+<tr>
+<td><code>/var/lib/setup-data.json</code></td>
+<td>created by the webapp, <strong>kept</strong> (used by dirtree, egos-storage, egos-extras)</td>
+</tr>
+<tr>
+<td><code>/var/lib/setup-complete</code></td>
+<td>end-of-setup flag</td>
+</tr>
+<tr>
+<td><code>/home/&lt;user&gt;/.email</code></td>
+<td>the email entered</td>
+</tr>
+</tbody>
+</table>
+<h3>Security notes</h3>
+<p>The form is plain HTTP, unauthenticated, on every interface; the AP passphrase is public and
+<code>setup-data.json</code> holds the password in plain text.</p></section>
+<section class="script"><h2 class="script-title" id="script-webapp-py">webapp.py</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Path</strong></td>
+<td><code>/usr/local/bin/webapp.py</code></td>
+</tr>
+<tr>
+<td><strong>Generated by</strong></td>
+<td>section 8 of the EgOS4 scripts</td>
+</tr>
+<tr>
+<td><strong>Language</strong></td>
+<td>Python 3, standard library only (<code>http.server</code>)</td>
+</tr>
+<tr>
+<td><strong>Started by</strong></td>
+<td><code>setup-webapp.sh</code>, 1st boot</td>
+</tr>
+<tr>
+<td><strong>Listens on</strong></td>
+<td><code>0.0.0.0:80</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Purpose</h3>
+<p>Shows the "System Setup" form (Email, Username, Password) and saves the submitted data to <code>/var/lib/setup-data.json</code>.</p>
+<h3>Elements</h3>
+<h4><code>HTML</code> (constant)</h4>
+<p>Dark responsive page with the <code>POST /</code> form and the hint "Connect to <strong>SetupBox</strong> WiFi or visit
+<strong>http://setupbox.local</strong>".</p>
+<h4>class <code>Handler(BaseHTTPRequestHandler)</code></h4>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Behaviour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>log_message(format, *args)</code></td>
+<td>empty: no request logging</td>
+</tr>
+<tr>
+<td><code>do_GET()</code></td>
+<td>any path → 200 with <code>HTML</code> (needed for the captive portal: the Android/Apple/Windows probes get the page)</td>
+</tr>
+<tr>
+<td><code>do_POST()</code></td>
+<td>reads <code>Content-Length</code> bytes, <code>parse_qs</code>, builds <code>{"email","user","password"}</code> (empty string when missing), writes it to <code>/var/lib/setup-data.json</code>, answers "Setup Complete — The system will now reboot and deploy the stack."</td>
+</tr>
+</tbody>
+</table>
+<h4>Startup</h4>
+<p><code>HTTPServer(('0.0.0.0', 80), Handler).serve_forever()</code>.</p>
+<h3>Format of <code>setup-data.json</code></h3>
+<pre><code class="language-json">{&quot;email&quot;: &quot;you@example.com&quot;, &quot;user&quot;: &quot;username&quot;, &quot;password&quot;: &quot;…&quot;}
+</code></pre>
+<h3>Limits</h3>
+<p>No validation of the username (<code>useradd</code> validates it), no password confirmation, no CSRF protection or
+authentication: whoever submits the form first becomes the administrator.</p></section>
+<section class="script"><h2 class="script-title" id="script-egos-growroot">egos-growroot.sh (arm64 only)</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Path</strong></td>
+<td><code>/usr/local/bin/egos-growroot.sh</code></td>
+</tr>
+<tr>
+<td><strong>Generated by</strong></td>
+<td>section 11b of <code>EgOS4-arm64.sh</code></td>
+</tr>
+<tr>
+<td><strong>Started by</strong></td>
+<td><code>egos-growroot.service</code> (<code>Before=first-boot-setup.service</code>, condition: <code>/var/lib/egos-growroot-done</code> missing)</td>
+</tr>
+<tr>
+<td><strong>When</strong></td>
+<td>1st boot, once</td>
+</tr>
+</tbody>
+</table>
+<h3>Purpose</h3>
+<p>The <code>.img</code> image is small (rootfs × 1.3 + 512 MB); at the first boot the root partition is grown to fill the whole NVMe.</p>
+<h3>Steps</h3>
+<ol>
+<li><code>SRC</code> = device of <code>/</code>; <code>PART</code> = its name; <code>DISK</code> = parent disk (<code>lsblk PKNAME</code>); <code>NUM</code> = partition number
+   from <code>/sys/class/block/&lt;part&gt;/partition</code>.</li>
+<li><code>growpart $DISK $NUM</code> (exit code 1 = "NOCHANGE", not an error: <code>|| true</code>).</li>
+<li><code>resize2fs $SRC</code> (online).</li>
+<li>Creates <code>/var/lib/egos-growroot-done</code> and disables the service.</li>
+</ol>
+<h3>Functions</h3>
+<p>None.</p></section>
+<section class="script"><h2 class="script-title" id="script-deploy-compose">deploy-compose.sh</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Path</strong></td>
+<td><code>/usr/local/bin/deploy-compose.sh</code></td>
+</tr>
+<tr>
+<td><strong>Generated by</strong></td>
+<td>section 9 of the EgOS4 scripts</td>
+</tr>
+<tr>
+<td><strong>Started by</strong></td>
+<td><code>docker-compose-startup.service</code></td>
+</tr>
+<tr>
+<td><strong>When</strong></td>
+<td>2nd boot (after <code>/var/lib/setup-complete</code>, as long as <code>/var/lib/docker-compose-done</code> is missing)</td>
+</tr>
+</tbody>
+</table>
+<h3>Purpose</h3>
+<p>Entry point of the stack deployment.</p>
+<h3>Steps</h3>
+<ol>
+<li><code>set -e</code>; if <code>/var/lib/setup-data.json</code> is missing → "No setup data", exit 1.</li>
+<li>Runs <code>/usr/local/bin/dirtree.sh</code>, which in turn <code>exec</code>s <code>wizardall2.sh</code>.</li>
+<li>Only if everything succeeded: creates <code>/var/lib/docker-compose-done</code> and disables the service.</li>
+</ol>
+<p>If the wizard fails, <code>set -e</code> stops the script <strong>before</strong> the flag: the service retries at the next boot.</p>
+<h3>Unit that starts it</h3>
+<p><code>docker-compose-startup.service</code>:</p>
+<ul>
+<li><code>After=network-online.target docker.service</code>, <code>Requires=docker.service</code>;</li>
+<li>drop-in <code>10-timesync.conf</code>: <code>After/Wants=time-sync.target</code> (correct clock before the TLS pulls);</li>
+<li><code>ExecStartPre=-timeout 120 … until getent hosts deb.debian.org</code> (waits for DNS up to 120 s, the <code>-</code> ignores the timeout);</li>
+<li><code>Type=oneshot</code>, <code>RemainAfterExit=yes</code>.</li>
+</ul>
+<h3>Functions</h3>
+<p>None.</p></section>
+<section class="script"><h2 class="script-title" id="script-dirtree">dirtree.sh</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Path</strong></td>
+<td><code>/usr/local/bin/dirtree.sh</code></td>
+</tr>
+<tr>
+<td><strong>Generated by</strong></td>
+<td>section 10 of the EgOS4 scripts</td>
+</tr>
+<tr>
+<td><strong>Started by</strong></td>
+<td><code>deploy-compose.sh</code>, 2nd boot</td>
+</tr>
+<tr>
+<td><strong>Runs at the end</strong></td>
+<td><code>exec ./wizardall2.sh</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Purpose</h3>
+<p>Creates the stack folders, copies the files from staging, generates credentials and <code>.env</code>, configures Samba and hands
+over to the wizard.</p>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>STAGE</code></td>
+<td><code>/usr/local/share/stack</code></td>
+</tr>
+<tr>
+<td><code>U</code></td>
+<td>user read from <code>/var/lib/setup-data.json</code></td>
+</tr>
+<tr>
+<td><code>H</code></td>
+<td><code>/home/$U</code> (must exist, otherwise exit 1)</td>
+</tr>
+<tr>
+<td><code>POOL</code></td>
+<td><code>/srv/egos/pool</code> (must be mounted, otherwise exit 1: the folders would end up under an empty mount point)</td>
+</tr>
+</tbody>
+</table>
+<h3>Steps</h3>
+<ol>
+<li><strong>Folders on the pool</strong>: <code>media/{Films,Musics,SerieTv,ROMs,downloads}</code> and <code>immich/upload</code>, owned by the user.</li>
+<li><strong>Folders in the home</strong> (system disk): <code>~/app/repos</code>, <code>~/app/jellyfin/{config,cache}</code>, <code>~/app/immich/postgres</code>.</li>
+<li><strong>Copy</strong> (not <code>mv</code>: if the service fails and runs again, the sources are still there) of <code>docker-compose.yml</code>,
+   <code>wizardall2.sh</code>, <code>jellsrv.json</code>, <code>jellremot.json</code> into <code>~/app/repos</code>, and the <code>egos-home/</code> folder
+   (<code>cp -rT</code>, so a retry copies over it instead of nesting it).</li>
+<li><strong>Credentials</strong> (Python block, <code>json.dump</code> handles the escaping):
+   - <code>immichset.json</code> = <code>{"email", "password", "name": user}</code> → Immich administrator;
+   - <code>jelluser.json</code> = <code>{"Name": user, "Password"}</code> → Jellyfin administrator.
+   They are not included in the ISO: this way test credentials never end up in the image.</li>
+<li><strong><code>.env</code></strong>: <code>env.template</code> with <code>__HOME__</code> replaced by the absolute path (compose does not expand <code>$HOME</code> in <code>.env</code> files).</li>
+<li><code>chmod +x wizardall2.sh</code>, <code>chown -R</code> of <code>~/app</code>.</li>
+<li><strong>Samba</strong>: writes <code>/etc/samba/smb.conf</code> with the <strong><code>[media]</code></strong> share on <code>/srv/egos/pool/media</code>, setup user
+   only, SMB2 minimum, no guests; <code>smbpasswd -a</code> with the same password; avahi service <code>_smb._tcp</code>
+   (<code>EgoCenter</code>); restarts smbd and avahi, then wsdd2 (it has <code>BindsTo</code> on smbd, so it is restarted separately; <code>|| true</code>
+   because network discovery is cosmetic).</li>
+<li><code>cd ~/app/repos &amp;&amp; exec ./wizardall2.sh</code>.</li>
+</ol>
+<p>Every step is idempotent: running them again at the next boot does no harm.</p>
+<h3>Functions</h3>
+<p>None.</p></section>
+<section class="script"><h2 class="script-title" id="script-wizardall2">wizardall2.sh</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Path</strong></td>
+<td><code>/usr/local/share/stack/wizardall2.sh</code> → copied to <code>~/app/repos/wizardall2.sh</code></td>
+</tr>
+<tr>
+<td><strong>Generated by</strong></td>
+<td>section 11 of the EgOS4 scripts</td>
+</tr>
+<tr>
+<td><strong>Started by</strong></td>
+<td><code>dirtree.sh</code> (<code>exec</code>)</td>
+</tr>
+<tr>
+<td><strong>Philosophy</strong></td>
+<td>"zero-errors mentality": <code>set -e</code>, every failing <code>curl -f</code> stops everything</td>
+</tr>
+</tbody>
+</table>
+<h3>Purpose</h3>
+<p>Starts the Docker stack and completes the initial configuration of Immich and Jellyfin through their APIs, so the user
+never has to open their setup wizards.</p>
+<h3>Steps</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Message</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>—</td>
+<td><code>cd</code> into the script's folder (the <code>curl -d @file.json</code> calls use relative paths)</td>
+</tr>
+<tr>
+<td>1</td>
+<td><code>Starting compose</code></td>
+<td><code>docker compose -f docker-compose.yml up -d</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>Waiting for Jellyfin…</code></td>
+<td>loops until <code>GET :8096/health</code> = 200</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>Waiting for Immich…</code></td>
+<td>loops until <code>GET :2283/api/server/ping</code> contains <code>pong</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>IMMICH USERSET</code></td>
+<td><code>POST :2283/api/auth/admin-sign-up</code> with <code>immichset.json</code>. If it fails (admin already created in an earlier attempt) it carries on</td>
+</tr>
+<tr>
+<td>5</td>
+<td>—</td>
+<td>reads <code>GET /System/Info/Public</code> (retried until it answers); if it holds <code>"StartupWizardCompleted":true</code> the whole Jellyfin Startup block (steps 6–11) is skipped: "already completed in a previous run"</td>
+</tr>
+<tr>
+<td>6</td>
+<td>—</td>
+<td>waits until <code>GET :8096/Startup/Configuration</code> = 200</td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>JELL SRVSET</code></td>
+<td><code>POST /Startup/Configuration</code> with <code>jellsrv.json</code> (server name <code>EgoFin</code>, interface and metadata in Italian)</td>
+</tr>
+<tr>
+<td>8</td>
+<td>—</td>
+<td>waits for <code>GET /Startup/User</code> = 200 (the GET is mandatory before the POST)</td>
+</tr>
+<tr>
+<td>9</td>
+<td><code>JELL USERSET</code></td>
+<td><code>POST /Startup/User</code> with <code>jelluser.json</code></td>
+</tr>
+<tr>
+<td>10</td>
+<td><code>JELL ACCESSET</code></td>
+<td><code>POST /Startup/RemoteAccess</code> with <code>jellremot.json</code> (remote access yes, UPnP no)</td>
+</tr>
+<tr>
+<td>11</td>
+<td><code>--- Complete ---</code></td>
+<td><code>POST /Startup/Complete</code></td>
+</tr>
+<tr>
+<td>12</td>
+<td><code>--- Verify ---</code></td>
+<td>prints <code>GET /System/Info/Public</code>, then <code>ALL OK</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<p>None.</p>
+<h3>Re-runs (since 4.2.2)</h3>
+<p>Once Jellyfin's wizard is complete, the <code>/Startup/*</code> APIs answer 401. Before 4.2.2 the wait in step 6 then never ended
+when <code>docker-compose-startup.service</code> retried at boot; now step 5 detects the completed wizard and skips it, so the
+script can be run again safely.</p></section>
+<section class="script"><h2 class="script-title" id="script-stack-configuration">Stack configuration (compose, env, JSON)</h2>
+<p>Files staged in <code>/usr/local/share/stack/</code> by section 11 of the EgOS4 scripts and copied to
+<code>~/app/repos/</code> by <a href="#script-dirtree">dirtree.sh</a>.</p>
+<h3>docker-compose.yml</h3>
+<p>Compose project <strong><code>egos</code></strong>, based on Immich's official compose file.</p>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Container</th>
+<th>Image</th>
+<th>Ports</th>
+<th>Volumes</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>immich-server</code></td>
+<td><code>immich_server</code></td>
+<td><code>ghcr.io/immich-app/immich-server:${IMMICH_VERSION}</code></td>
+<td>2283</td>
+<td><code>${UPLOAD_LOCATION}:/data</code>, localtime</td>
+<td><code>restart: always</code>, healthcheck</td>
+</tr>
+<tr>
+<td><code>immich-machine-learning</code></td>
+<td><code>immich_machine_learning</code></td>
+<td><code>…/immich-machine-learning:${IMMICH_VERSION}</code></td>
+<td>—</td>
+<td>volume <code>model-cache</code></td>
+<td>for acceleration: suffix <code>-cuda</code>, <code>-openvino</code>, <code>-armnn</code>…</td>
+</tr>
+<tr>
+<td><code>redis</code></td>
+<td><code>immich_redis</code></td>
+<td><code>valkey/valkey:9</code> pinned by digest</td>
+<td>—</td>
+<td>—</td>
+<td>healthcheck <code>redis-cli ping</code></td>
+</tr>
+<tr>
+<td><code>database</code></td>
+<td><code>immich_postgres</code></td>
+<td><code>ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0</code> by digest</td>
+<td>—</td>
+<td><code>${DB_DATA_LOCATION}</code></td>
+<td><code>--data-checksums</code>, <code>shm_size 128mb</code>. <strong>Local filesystem only</strong>, never NFS/SMB</td>
+</tr>
+<tr>
+<td><code>docker-proxy</code></td>
+<td><code>egos-home-docker-proxy</code></td>
+<td><code>tecnativa/docker-socket-proxy:0.3.0</code> by digest</td>
+<td><code>127.0.0.1:23750</code></td>
+<td><code>/var/run/docker.sock</code> (ro), <code>egos-home/docker-proxy.cfg</code> (ro, replaces the image's template)</td>
+<td>since 4.3; allows only <code>GET /containers/json</code> and <code>/_ping</code>; <code>cap_drop: ALL</code>, <code>no-new-privileges</code></td>
+</tr>
+<tr>
+<td><code>egos-home</code></td>
+<td><code>egos-home</code></td>
+<td><code>python:3.13-alpine</code> by digest</td>
+<td>8000 (host network)</td>
+<td><code>egos-home/home.py</code>, <code>egos-home/icons</code> (ro)</td>
+<td>since 4.3; user 1000, read-only, healthcheck <code>/health</code>. See <a href="#script-egos-home">egos-home.md</a></td>
+</tr>
+<tr>
+<td><code>jellyfin</code></td>
+<td><code>jellyfin</code></td>
+<td><code>jellyfin/jellyfin:${JELLYFIN_VERSION}</code></td>
+<td>8096/tcp, 7358/udp</td>
+<td>config, cache, <code>Films</code>, <code>Musics</code>, <code>SerieTv→/Serie</code> (ro), <code>ROMs</code> (ro), <strong>gate</strong> <code>/run/egos/pool-ok→/egos-pool-ok</code> (ro, <code>create_host_path: false</code>)</td>
+<td><code>restart: unless-stopped</code>, <code>JELLYFIN_PublishedServerUrl=http://localhost:8096</code>, <code>host.docker.internal</code></td>
+</tr>
+</tbody>
+</table>
+<p>Restart policies: the four Immich services are <code>always</code>, Jellyfin <code>unless-stopped</code> (since 4.2: a Jellyfin
+held stopped by EgOS stays stopped across a reboot too). <code>JELLYFIN_PublishedServerUrl=http://localhost:8096</code> is not
+correct for clients connecting from other devices.</p>
+<p>The <strong>gate</strong> stops Docker from starting Jellyfin while a pool disk is missing (see <a href="#script-egos-storage">egos-storage.md</a>).
+Without <code>create_host_path: false</code> compose would pass the bind as a legacy <code>Binds</code> entry and Docker would create the missing source.</p>
+<h3>env.template → .env</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Value</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>TZ</code></td>
+<td><code>Europe/Rome</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>UPLOAD_LOCATION</code></td>
+<td><code>/srv/egos/pool/immich/upload</code></td>
+<td>Immich originals, on the pool</td>
+</tr>
+<tr>
+<td><code>DB_DATA_LOCATION</code></td>
+<td><code>__HOME__/app/immich/postgres</code></td>
+<td><strong>system disk</strong></td>
+</tr>
+<tr>
+<td><code>DB_USERNAME</code> / <code>DB_PASSWORD</code> / <code>DB_DATABASE_NAME</code></td>
+<td><code>postgres</code> / <code>password</code> / <code>immich</code></td>
+<td>default password, to be changed</td>
+</tr>
+<tr>
+<td><code>IMMICH_VERSION</code></td>
+<td><code>v3.2.2</code></td>
+<td>substituted at build time for <code>@IMMICH_VERSION@</code></td>
+</tr>
+<tr>
+<td><code>JELLYFIN_CONFIG_LOCATION</code>, <code>JELLYFIN_CACHE_LOCATION</code></td>
+<td><code>__HOME__/app/jellyfin/{config,cache}</code></td>
+<td>system disk</td>
+</tr>
+<tr>
+<td><code>JELLYFIN_MEDIA_LOCATION</code></td>
+<td><code>/srv/egos/pool/media</code></td>
+<td>on the pool</td>
+</tr>
+<tr>
+<td><code>JELLYFIN_VERSION</code></td>
+<td><code>12.1</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><code>__HOME__</code> is replaced by <code>dirtree.sh</code> with the absolute path of the home (compose does not expand <code>$HOME</code> in <code>.env</code> files).</p>
+<h3>Wizard JSON files</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Origin</th>
+<th>Contents</th>
+<th>Used by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>jellsrv.json</code></td>
+<td>staging</td>
+<td><code>ServerName: EgoFin</code>, <code>UICulture: it</code>, <code>MetadataCountryCode: IT</code>, <code>PreferredMetadataLanguage: it</code></td>
+<td><code>POST /Startup/Configuration</code></td>
+</tr>
+<tr>
+<td><code>jellremot.json</code></td>
+<td>staging</td>
+<td><code>EnableRemoteAccess: true</code>, <code>EnableAutomaticPortMapping: false</code></td>
+<td><code>POST /Startup/RemoteAccess</code></td>
+</tr>
+<tr>
+<td><code>immichset.json</code></td>
+<td><strong>generated</strong> by dirtree</td>
+<td><code>email</code>, <code>password</code>, <code>name</code> = setup user</td>
+<td><code>POST /api/auth/admin-sign-up</code></td>
+</tr>
+<tr>
+<td><code>jelluser.json</code></td>
+<td><strong>generated</strong> by dirtree</td>
+<td><code>Name</code>, <code>Password</code> = setup user</td>
+<td><code>POST /Startup/User</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Resulting folder layout</h3>
+<pre><code>/srv/egos/
+├── pool/                  mergerfs (egos-pool.service)
+│   ├── media/{Films,Musics,SerieTv,ROMs,downloads}   ← Jellyfin, Samba [media], qbtt
+│   └── immich/upload/                                ← Immich originals
+├── local/                 branch on the system disk
+└── disks/data1, data2…    one ext4 per data disk
+
+/home/&lt;user&gt;/app/
+├── repos/                 docker-compose.yml, .env, wizardall2.sh, *.json
+│   └── egos-home/         home.py, docker-proxy.cfg, icons/
+├── immich/postgres/       Immich database
+├── jellyfin/{config,cache}/
+├── qbtt/…                 (egos-extras enable qbtt)
+└── pdf/bento/             (egos-extras enable bento)
+</code></pre></section>
+<section class="script"><h2 class="script-title" id="script-egos-home">egos-home — home page with one card per container</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Path</strong></td>
+<td><code>/usr/local/share/stack/egos-home/</code> → copied to <code>~/app/repos/egos-home/</code> by <a href="#script-dirtree">dirtree.sh</a></td>
+</tr>
+<tr>
+<td><strong>Files</strong></td>
+<td><code>home.py</code> (server + page), <code>docker-proxy.cfg</code> (proxy rules), <code>icons/*.svg</code></td>
+</tr>
+<tr>
+<td><strong>Generated by</strong></td>
+<td>section 11 of the EgOS4 scripts (heredocs <code>EGOSHOME_*_EOF</code>), since 4.3.0</td>
+</tr>
+<tr>
+<td><strong>Containers</strong></td>
+<td><code>egos-home</code> (<code>python:3.13-alpine</code>) and <code>egos-home-docker-proxy</code> (<code>tecnativa/docker-socket-proxy:0.3.0</code>), both in the main <code>egos</code> compose project, see <a href="#script-stack-configuration">stack-configuration.md</a></td>
+</tr>
+<tr>
+<td><strong>Address</strong></td>
+<td><code>http://egocenter.local:8000</code> (or the box's IP)</td>
+</tr>
+<tr>
+<td><strong>Language</strong></td>
+<td>Python 3, standard library only; page texts in Italian</td>
+</tr>
+</tbody>
+</table>
+<h3>Purpose</h3>
+<p>A launcher for the box: one card per service, with a link. It follows Docker by itself, so the
+optional stacks (<code>egos-extras enable qbtt</code>) and anything the user adds appear without editing a list.</p>
+<h3>How the cards are built</h3>
+<ol>
+<li>Every request reads <code>GET /containers/json?all=1</code> from the proxy (<code>DOCKER_API</code>, default
+   <code>http://127.0.0.1:23750</code>).</li>
+<li><strong>One card per container.</strong> Port: label <code>egos.home.port</code>, otherwise the first published TCP port
+   (bound to all addresses) that answers <code>HEAD /</code> as HTTP, then as HTTPS. The probe result is cached for
+   10 minutes. Databases, BitTorrent, Redis… do not speak HTTP and never get a card.</li>
+<li><strong>Name, description, icon, order</strong>: <code>egos.home.*</code> labels, otherwise defaults for known images (<code>KNOWN</code>:
+   Immich, Jellyfin, qBittorrent, torrent-web, BentoPDF, Multi-scrobbler), otherwise the container name and
+   image. Without <code>icons/&lt;id&gt;.svg</code> the card shows the initial on a colour derived from the name.</li>
+<li><strong>State</strong> from Docker: <code>on</code>; <code>warn</code> (running but <code>(unhealthy)</code>: yellow border, "non sano"); <code>off</code> (grey,
+   not clickable). A stopped container keeps its card if it has a <code>port</code> label or was seen running since
+   egos-home started.</li>
+<li><strong>Static cards</strong> (<code>STATIC</code>): services that are not containers — Cockpit (9090, https), checked by
+   connecting to the port.</li>
+<li>Links are built from the request's <code>Host</code> header (validated) + port; <code>egos.home.url</code> replaces the link
+   (e.g. a public domain) and the card shows <code>↗</code> instead of the port.</li>
+<li>If the proxy does not answer, a banner says so and only the static cards remain.</li>
+</ol>
+<p>The page refreshes the states every 15 s through <code>/api/status</code> and reloads itself when containers appear or
+disappear.</p>
+<h3>Labels</h3>
+<table>
+<thead>
+<tr>
+<th>Label</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>egos.home.enable=false</code></td>
+<td>hides the container (set on <code>egos-home</code> and <code>docker-proxy</code>)</td>
+</tr>
+<tr>
+<td><code>egos.home.name</code>, <code>egos.home.desc</code></td>
+<td>card name and description</td>
+</tr>
+<tr>
+<td><code>egos.home.port</code>, <code>egos.home.scheme</code>, <code>egos.home.path</code></td>
+<td>port, <code>http</code>/<code>https</code>, path</td>
+</tr>
+<tr>
+<td><code>egos.home.url</code></td>
+<td>full link instead of host:port</td>
+</tr>
+<tr>
+<td><code>egos.home.icon</code></td>
+<td><code>icons/&lt;value&gt;.svg</code></td>
+</tr>
+<tr>
+<td><code>egos.home.order</code></td>
+<td>sort key (default 50; Immich 10, Jellyfin 20, Cockpit 90)</td>
+</tr>
+</tbody>
+</table>
+<p>Changing a label means recreating that container (<code>docker compose up -d</code> in its project).</p>
+<h3>Endpoints</h3>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Answer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/</code></td>
+<td>the page</td>
+</tr>
+<tr>
+<td><code>/api/status</code></td>
+<td><code>{"docker": bool, "services": {id: "on"/"warn"/"off"}}</code></td>
+</tr>
+<tr>
+<td><code>/icons/&lt;id&gt;.svg</code></td>
+<td>icon (<code>[a-z0-9-]+</code> only, cached 1 day)</td>
+</tr>
+<tr>
+<td><code>/health</code></td>
+<td><code>ok</code> (container healthcheck)</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions (<code>home.py</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>is_open(port)</code></td>
+<td>TCP connect to <code>127.0.0.1:port</code> (static cards)</td>
+</tr>
+<tr>
+<td><code>_speaks_http(port, tls)</code></td>
+<td>sends <code>HEAD /</code> (optionally over TLS without verification) and checks the answer starts with <code>HTTP/</code></td>
+</tr>
+<tr>
+<td><code>web_scheme(port)</code></td>
+<td><code>http</code>, <code>https</code> or <code>None</code>, cached <code>PROBE_TTL</code> (600 s)</td>
+</tr>
+<tr>
+<td><code>docker_containers()</code></td>
+<td>container list from the proxy, <code>None</code> if it does not answer</td>
+</tr>
+<tr>
+<td><code>known_for(image)</code></td>
+<td>defaults for a known image</td>
+</tr>
+<tr>
+<td><code>card_from_container(c)</code></td>
+<td>applies labels, port choice, defaults and state; <code>None</code> = no card</td>
+</tr>
+<tr>
+<td><code>services()</code></td>
+<td>containers (8 threads) + static cards, sorted by <code>order</code>, name</td>
+</tr>
+<tr>
+<td><code>request_host(header)</code></td>
+<td>host for the links, <code>FALLBACK_HOST</code> if the header is invalid</td>
+</tr>
+<tr>
+<td><code>icon_html(card)</code></td>
+<td><code>&lt;img&gt;</code> of the icon or the generated initial</td>
+</tr>
+<tr>
+<td><code>render(host)</code> / <code>api_status()</code></td>
+<td>page / JSON</td>
+</tr>
+<tr>
+<td><code>Handler.do_GET</code></td>
+<td>routing; <code>send()</code> adds <code>no-store</code> and <code>nosniff</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Security</h3>
+<ul>
+<li>The Docker socket goes <strong>only</strong> into the proxy. <code>docker-proxy.cfg</code> replaces the image's haproxy template and
+  allows only <code>GET /containers/json</code> and <code>GET /_ping</code>; everything else answers 403. With the image's own
+  <code>CONTAINERS=1</code> mode, <code>/containers/&lt;id&gt;/json</code> would expose every container's <strong>environment variables</strong>
+  (passwords) and <code>/containers/&lt;id&gt;/logs</code> its logs to anything that can reach the proxy port.</li>
+<li>The proxy listens on <code>127.0.0.1:23750</code> (reachable by host processes and host-network containers), runs with
+  <code>cap_drop: ALL</code> and <code>no-new-privileges</code>; it is not read-only because the image writes its <code>haproxy.cfg</code>
+  at start.</li>
+<li><code>egos-home</code>: read-only container, user 1000, host network (needed for the port probes); it has no
+  authentication — it shows only links, on the LAN.</li>
+</ul>
+<h3>Risks and limits</h3>
+<ul>
+<li>The stack now pulls two more images (<code>python:3.13-alpine</code>, <code>tecnativa/docker-socket-proxy</code>, both pinned by
+  digest). As for the other images, a failed pull makes <code>docker compose up</code> fail and the deployment retries at
+  the next boot.</li>
+<li>Port 8000 must be free on the box.</li>
+<li>Boxes installed before 4.3 do not get egos-home by themselves (no <code>egos-update</code> yet): the files and the two
+  services have to be added to <code>~/app/repos</code> by hand.</li>
+</ul></section>
+<h2 class="group" id="group-storage">Storage</h2>
+<section class="script"><h2 class="script-title" id="script-egos-storage">egos-storage</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Path on the system</strong></td>
+<td><code>/usr/local/sbin/egos-storage</code></td>
+</tr>
+<tr>
+<td><strong>Generated by</strong></td>
+<td><code>EgOS4-amd64.sh</code> and <code>EgOS4-arm64.sh</code>, section 11b (heredoc <code>STORAGE_EOF</code>, identical in the two scripts)</td>
+</tr>
+<tr>
+<td><strong>Language</strong></td>
+<td>Bash (<code>set -euo pipefail</code>), with embedded Python 3 blocks</td>
+</tr>
+<tr>
+<td><strong>Run as</strong></td>
+<td>root only (<code>sudo</code>); otherwise it exits with "Run with sudo."</td>
+</tr>
+<tr>
+<td><strong>Version</strong></td>
+<td>EgOS 4.3.0</td>
+</tr>
+</tbody>
+</table>
+<h3>What it is for</h3>
+<p>It manages the EgOS <strong>storage pool</strong>: a mergerfs filesystem mounted on <code>/srv/egos/pool</code> that joins the folder
+<code>/srv/egos/local</code> (on the system disk) and the data disks <code>/srv/egos/disks/dataN</code> (one ext4 per disk,
+no RAID: if you lose a disk you lose its files, not the pool).</p>
+<p>The pool exists <strong>from the first boot</strong>. The stack (Jellyfin, Immich, Samba) always points to <code>/srv/egos/pool/...</code>,
+so adding or removing a disk never changes a path.</p>
+<table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Pool branches</th>
+<th>Where new files go</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No data disk</td>
+<td><code>local=RW</code></td>
+<td>system disk</td>
+</tr>
+<tr>
+<td>One or more data disks</td>
+<td><code>data1=RW:data2=RW…:local=NC</code></td>
+<td>data disks (<code>NC</code> = "no create": <code>local</code> stays readable/writable but takes no new files)</td>
+</tr>
+<tr>
+<td>A disk missing at boot</td>
+<td>only the disks present + <code>local</code></td>
+<td>pool "degraded", Jellyfin held stopped until the disk is back</td>
+</tr>
+</tbody>
+</table>
+<blockquote class="box note">
+<p><strong class="box-title">Note</strong> — With <code>minfreespace=20G</code> a branch with less than 20 GB free takes no new files. If every data disk
+is below that threshold (or the disk is smaller than ~20 GB) writes fail with
+EROFS, because <code>local</code> is <code>NC</code>. This is intended: the system disk no longer fills up.</p>
+</blockquote>
+<h3>Commands</h3>
+<h4>Interactive (shell)</h4>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Alias (<code>/etc/profile.d/egos-storage.sh</code>)</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>egos-storage add</code> (default)</td>
+<td><code>storage-add</code></td>
+<td>formats a disk and joins it to the pool "hot"</td>
+</tr>
+<tr>
+<td><code>egos-storage status</code></td>
+<td><code>storage-status</code></td>
+<td>pool and branch status</td>
+</tr>
+<tr>
+<td><code>egos-storage remove</code></td>
+<td><code>storage-remove</code></td>
+<td>retires a branch (run it with the disk still connected)</td>
+</tr>
+<tr>
+<td><code>egos-storage reattach</code> / <code>remount</code></td>
+<td><code>storage-reattach</code>, <code>storage-remount</code></td>
+<td>remounts disks that came back and refreshes the pool</td>
+</tr>
+<tr>
+<td><code>egos-storage drain</code></td>
+<td><code>storage-drain</code></td>
+<td>moves files from the system disk to the data disks</td>
+</tr>
+<tr>
+<td><code>egos-storage link</code></td>
+<td><code>storage-link</code></td>
+<td>installs older than 4.2 only: moves the stack data onto the pool</td>
+</tr>
+</tbody>
+</table>
+<h4>Non-interactive (Cockpit page, scripts)</h4>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>status --json</code></td>
+<td>JSON with pool, branches, stack paths, job</td>
+</tr>
+<tr>
+<td><code>disks --json</code></td>
+<td>JSON of the disks that can be added</td>
+</tr>
+<tr>
+<td><code>add --disk DEV --confirm DEV</code></td>
+<td>the confirmation must repeat <code>DEV</code> exactly</td>
+</tr>
+<tr>
+<td><code>remove --branch dataN --confirm dataN</code></td>
+<td>the same with the branch name</td>
+</tr>
+<tr>
+<td><code>link --yes [--immich]</code></td>
+<td><code>--immich</code> also moves the Immich originals</td>
+</tr>
+<tr>
+<td><code>job &lt;command&gt; &lt;options&gt;</code></td>
+<td>runs the command as the systemd unit <code>egos-storage-job</code> (survives a closed browser); log in <code>/var/log/egos-storage/job.log</code></td>
+</tr>
+</tbody>
+</table>
+<h4>Internal (used by the systemd units)</h4>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Called by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>_pool</code></td>
+<td><code>egos-pool.service</code> (ExecStart)</td>
+</tr>
+<tr>
+<td><code>_pool-ready</code></td>
+<td><code>egos-pool.service</code> (ExecStartPost)</td>
+</tr>
+<tr>
+<td><code>_guard</code></td>
+<td><code>egos-pool-guard.service</code></td>
+</tr>
+<tr>
+<td><code>_autoreattach</code></td>
+<td><code>egos-reattach.service</code>, started by the udev rule</td>
+</tr>
+<tr>
+<td><code>_job</code></td>
+<td>the transient unit created by <code>job</code></td>
+</tr>
+</tbody>
+</table>
+<h4>Meaningful exit codes</h4>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>ok / cancelled by the user</td>
+</tr>
+<tr>
+<td>1</td>
+<td>generic error, wrong confirmation, lock busy</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>add</code>: disk formatted and mounted but <strong>not</strong> joined to the pool</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>reattach</code>: at least one disk is still missing</td>
+</tr>
+</tbody>
+</table>
+<h3>Variables and files</h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Value</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>POOL</code></td>
+<td><code>/srv/egos/pool</code></td>
+<td>mergerfs mount point</td>
+</tr>
+<tr>
+<td><code>LOCAL</code></td>
+<td><code>/srv/egos/local</code></td>
+<td>branch on the system disk</td>
+</tr>
+<tr>
+<td><code>BRANCHES</code></td>
+<td><code>/srv/egos/disks</code></td>
+<td>folder of the <code>dataN</code> mount points</td>
+</tr>
+<tr>
+<td><code>FSTAB</code></td>
+<td><code>/etc/fstab</code></td>
+<td>managed disk lines (recognised by field 2)</td>
+</tr>
+<tr>
+<td><code>JOBUNIT</code> / <code>JOBLOG</code></td>
+<td><code>egos-storage-job</code> / <code>/var/log/egos-storage/job.log</code></td>
+<td>long operations</td>
+</tr>
+<tr>
+<td><code>POOL_UNIT</code></td>
+<td><code>egos-pool.service</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>RUNDIR</code></td>
+<td><code>/run/egos</code></td>
+<td>volatile state</td>
+</tr>
+<tr>
+<td><code>DEGRADED</code></td>
+<td><code>/run/egos/pool-degraded</code></td>
+<td>list of missing disks (absent when the pool is complete)</td>
+</tr>
+<tr>
+<td><code>GATE</code></td>
+<td><code>/run/egos/pool-ok</code></td>
+<td>exists only when the pool is complete; Jellyfin mounts it, so without it Docker cannot start Jellyfin</td>
+</tr>
+<tr>
+<td><code>HELD</code></td>
+<td><code>/var/lib/egos/jellyfin-held</code></td>
+<td>persistent: "Jellyfin held stopped" survives a reboot</td>
+</tr>
+<tr>
+<td><code>LOCK</code></td>
+<td><code>/run/egos/storage.lock</code></td>
+<td>one change at a time</td>
+</tr>
+<tr>
+<td><code>MOTD</code></td>
+<td><code>/etc/motd</code></td>
+<td>"disk missing" warning (Cockpit Overview + SSH login)</td>
+</tr>
+<tr>
+<td><code>DISK_WAIT</code></td>
+<td><code>60</code> (can be overridden from the environment)</td>
+<td>seconds to wait for slow USB disks at boot</td>
+</tr>
+<tr>
+<td><code>MFS_OPTS</code></td>
+<td><code>allow_other,use_ino,cache.files=partial,dropcacheonclose=true,category.create=mfs,moveonenospc=true,minfreespace=20G,fsname=egospool,statfs_ignore=nc</code></td>
+<td>mergerfs options</td>
+</tr>
+<tr>
+<td><code>VERIFY_MB</code> / <code>VERIFY_TIMEOUT</code></td>
+<td><code>128</code> / <code>180</code></td>
+<td>size and maximum time of the integrity test</td>
+</tr>
+</tbody>
+</table>
+<p>Required commands (checked at start): <code>lsblk parted mkfs.ext4 blkid findmnt mountpoint mergerfs udevadm setfattr chattr rsync dd cmp timeout wipefs tr flock findfs</code>.</p>
+<hr>
+<h3>Functions</h3>
+<h4>fstab handling</h4>
+<p>Every rewrite goes through a temporary file: NUL/control bytes are dropped and the result is checked
+before replacing the real fstab (an interrupted write can leave NUL bytes and an unmounted disk).</p>
+<h5><code>fstab_commit &lt;candidate_file&gt;</code></h5>
+<p>Validates and installs a candidate fstab.</p>
+<ol>
+<li><code>sync</code> of the temporary file.</li>
+<li><code>findmnt --verify --tab-file</code>: counts <strong>only parse errors</strong> (an unplugged <code>nofail</code> disk is an "error" for
+   <code>--verify</code> but a legitimate state here).</li>
+<li>Checks that the <code>/</code> line still exists.</li>
+<li>If all is well: backup copy in <code>/etc/fstab.egos-prev</code>, atomic <code>mv</code>, <code>sync</code>.
+   If it fails: prints the output, deletes the candidate, returns 1 and <strong>does not touch</strong> <code>/etc/fstab</code>.</li>
+</ol>
+<h5><code>fstab_del &lt;mountpoint&gt;</code></h5>
+<p>Removes the (uncommented) lines whose field 2 is <code>&lt;mountpoint&gt;</code>, stripping NULs; then <code>fstab_commit</code>.</p>
+<h5><code>fstab_add &lt;line&gt;</code></h5>
+<p>Appends a complete line at the end (after stripping NULs); then <code>fstab_commit</code>.</p>
+<h4>Concurrency</h4>
+<h5><code>storage_lock &lt;seconds&gt;</code></h5>
+<p>Opens <code>/run/egos/storage.lock</code> on descriptor 9 and takes a <code>flock</code>, waiting at most <code>&lt;seconds&gt;</code> (0 = fail
+at once). It keeps the Cockpit job, a shell command and the udev reattach from overlapping (e.g. <code>add</code> formats a
+disk labelled <code>egos-dataN</code> and udev "sees" a pool disk appear).
+Taken with 0 seconds by <code>add</code>, <code>link</code>, <code>remove</code>, <code>reattach</code>, <code>remount</code>, <code>drain</code>; with 900 seconds by <code>_autoreattach</code>.</p>
+<h4>MOTD warning</h4>
+<h5><code>motd_update &lt;missing_disks&gt;</code></h5>
+<p>Writes (or deletes, if the argument is empty) a block at the top of <code>/etc/motd</code> delimited by
+<code>*** EgOS STORAGE WARNING</code> … <code>*** end of EgOS storage warning ***</code>. The block lists the missing disks and, if
+<code>HELD</code> exists, adds "Jellyfin is stopped until it is back". The rest of the file is preserved; the file is replaced
+only if the content changes.</p>
+<h4>The pool</h4>
+<blockquote>
+<p>Golden rule (comment in the code): <strong>never</strong> unmount or restart the pool under a running stack. The containers
+would keep their bind mounts on the old, dead FUSE mount and see empty folders. Every change is applied
+hot through the branches extended attribute.</p>
+</blockquote>
+<h5><code>pool_mounted</code></h5>
+<p>True if <code>/srv/egos/pool</code> is mounted (<code>findmnt</code>).</p>
+<h5><code>configured_disks</code></h5>
+<p>Lists the <code>/srv/egos/disks/data*</code> mount points present in fstab, sorted <code>data1, data2, …</code> (<code>sort -V</code>).</p>
+<h5><code>missing_disks</code></h5>
+<p>Among the configured disks, prints those that are <strong>not</strong> mounted.</p>
+<h5><code>branch_list</code></h5>
+<p>Builds the branch string for mergerfs: the mounted data disks first (<code>=RW</code>), <code>local</code> last.
+<code>local</code> is <code>=RW</code> if no data disk is configured, <code>=NC</code> otherwise.</p>
+<h5><code>update_state</code></h5>
+<p>Updates the state in <code>/run/egos</code>: if disks are missing it writes the list to <code>pool-degraded</code> and removes the <code>pool-ok</code>
+gate; otherwise it deletes <code>pool-degraded</code> and creates <code>pool-ok</code>. Finally it calls <code>motd_update</code>.</p>
+<h5><code>pool_start</code></h5>
+<p><code>systemctl start egos-pool.service</code> and checks that the pool is mounted. The mergerfs daemon must live in the
+service's cgroup, not the caller's: started from the Cockpit job it would be killed when the job ends.</p>
+<h5><code>pool_sync</code></h5>
+<p><strong>Hot</strong> branch update. If the pool is not mounted, it starts it (<code>pool_start</code>) and calls <code>update_state</code>.
+Otherwise it writes <code>branch_list</code> into the <code>user.mergerfs.branches</code> attribute of the control file
+<code>/srv/egos/pool/.mergerfs</code> (<code>srcmounts</code> is read-only in Debian 13's mergerfs), then <code>update_state</code>.
+Returns 1 if the attribute cannot be written.</p>
+<h5><code>mfs_branches &lt;value&gt;</code></h5>
+<p>Writes the branches attribute directly; used by <code>do_remove</code> with <code>-/path</code> to detach a single branch.</p>
+<h5><code>guard_dir &lt;dir&gt;</code> / <code>unguard_dir &lt;dir&gt;</code></h5>
+<p>If <code>&lt;dir&gt;</code> is <strong>not</strong> a mount point, makes it immutable (<code>chattr +i</code>) / unlocks it (<code>chattr -i</code>). An empty mount
+point must never receive files: mounting over it works, writing into it does not.</p>
+<h4>The <code>egos-pool</code> service</h4>
+<h5><code>do_pool_run</code> (command <code>_pool</code>)</h5>
+<p>ExecStart of <code>egos-pool.service</code>.</p>
+<ol>
+<li>Exits if the pool is already mounted.</li>
+<li><strong>Migration</strong>: installs older than 4.2 mounted the pool from fstab; if it finds that line it removes it
+   (<code>fstab_del</code>) and runs <code>daemon-reload</code>.</li>
+<li>Makes the pool mount point and those of the configured disks immutable (<code>guard_dir</code>).</li>
+<li>Waits up to <code>DISK_WAIT</code> seconds (60) for missing disks to appear (slow USB).</li>
+<li><code>update_state</code>; if some disk is still missing it prints <code>DEGRADED: …</code>.</li>
+<li><code>exec mergerfs -f -o $MFS_OPTS &lt;branches&gt; /srv/egos/pool</code> (in the foreground: the process is the service).</li>
+</ol>
+<h5><code>do_pool_ready</code> (command <code>_pool-ready</code>)</h5>
+<p>ExecStartPost: waits up to <code>DISK_WAIT + 30</code> seconds for the pool to show as mounted. This way the unit is "started"
+only once the pool is really there (docker and smbd start after it).</p>
+<h4>Protecting Jellyfin</h4>
+<p>Docker restarts its own containers at boot, before any EgOS unit can step in. That is why the
+compose file mounts the gate <code>/run/egos/pool-ok</code> inside Jellyfin with <code>create_host_path: false</code>: if the gate does not
+exist Docker <strong>refuses</strong> to start Jellyfin. This way the library scan never sees missing titles (it would delete them
+together with their metadata and watch history).</p>
+<h5><code>jellyfin_release</code></h5>
+<p>If <code>HELD</code> exists, runs <code>docker start jellyfin</code>; if that succeeds, deletes <code>HELD</code>.</p>
+<h5><code>do_guard</code> (command <code>_guard</code>)</h5>
+<p>Run by <code>egos-pool-guard.service</code> after docker and the deployment.</p>
+<ul>
+<li>
+<p>Degraded pool: waits up to 60 s for the <code>jellyfin</code> container to exist, creates <code>HELD</code>; if Jellyfin is running
+  (stack installed before the gate existed) it stops it with <code>docker stop</code>, otherwise it records that the gate keeps it off.
+  Updates the MOTD.</p>
+</li>
+<li>
+<p>Complete pool: <code>jellyfin_release</code>.</p>
+</li>
+</ul>
+<h4>Reattach</h4>
+<h5><code>do_reattach</code> (commands <code>reattach</code>, <code>remount</code>)</h5>
+<p>For each missing disk it tries a plain <code>mount</code> (fails at once if the disk is absent, instead of waiting for the
+mount unit's timeout). Then <code>pool_sync</code>. If something is still missing it prints the disks and exits with code <strong>3</strong>
+("Check cable and power… If the disk is gone for good: storage-remove"); otherwise <code>jellyfin_release</code>.</p>
+<h5><code>do_autoreattach</code> (command <code>_autoreattach</code>)</h5>
+<p>Started by the udev rule <code>90-egos-reattach.rules</code> when a partition labelled <code>egos-data*</code> appears.</p>
+<ol>
+<li>Does nothing if <code>egos-pool.service</code> is not active (at boot the service itself takes care of it).</li>
+<li><code>udevadm settle</code> (several disks plugged in together = a single pass), then <code>storage_lock 900</code>.</li>
+<li>Looks, among the missing disks, for those whose fstab source (<code>UUID=…</code>) can now be found (<code>findfs</code>). It also
+   considers the "stale" state: pool marked degraded but no disk missing any more.</li>
+<li>If there is something to do it runs <code>do_reattach</code>, writing the output to <code>job.log</code> (visible in Cockpit as "Last
+   operation") and to the journal.</li>
+</ol>
+<h4>Link (legacy installs)</h4>
+<h5><code>env_get &lt;key&gt;</code></h5>
+<p>Reads the value of <code>&lt;key&gt;</code> from the stack's <code>.env</code> file (<code>$ENVF</code>), last occurrence.</p>
+<h5><code>move_tree &lt;env_key&gt; &lt;destination&gt;</code></h5>
+<p>Moves the folder named by a <code>.env</code> key onto the pool, with verification:</p>
+<ol>
+<li>skips if the key is missing, already equal to the destination, or if the folder does not exist;</li>
+<li>checks the free space (size + 1 GiB margin);</li>
+<li><code>rsync -aHAX --numeric-ids</code>;</li>
+<li><strong>check 1</strong>: a second <code>rsync</code> in dry-run must have nothing to transfer;</li>
+<li><strong>check 2</strong>: same number of files at source and destination;</li>
+<li>renames the original to <code>&lt;folder&gt;.pre-pool</code> and updates <code>.env</code>.
+On any error the source stays intact and <code>.env</code> does not change.</li>
+</ol>
+<h5><code>do_link</code> (command <code>link</code>)</h5>
+<p>For installs older than 4.2 (the stack was not on the pool). Finds the user from <code>/var/lib/setup-data.json</code>,
+asks (or takes from <code>--yes</code>/<code>--immich</code>) whether to move the Immich originals too, saves <code>.env</code>
+(<code>.env.bak.&lt;date&gt;</code>), stops the stack (<code>docker compose down</code>), calls <code>move_tree</code> for
+<code>JELLYFIN_MEDIA_LOCATION</code> → <code>/srv/egos/pool/media</code> and, if requested, <code>UPLOAD_LOCATION</code> → <code>/srv/egos/pool/immich/upload</code>,
+fixes the permissions, updates the <code>path</code> of the Samba share <code>[media]</code>, restarts smbd/wsdd2 and the stack.
+Immich's Postgres database <strong>always stays on the system disk</strong> (a DB on a USB disk is easily corrupted).
+The <code>.pre-pool</code> folders have to be deleted by hand.</p>
+<h4>Status</h4>
+<h5><code>do_status</code> (command <code>status</code>)</h5>
+<p>Prints: mounted branches (<code>findmnt</code>), each <code>dataN</code> with source/size/space or <code>NOT MOUNTED</code>, usage of
+<code>/srv/egos/local</code>; then the pool (<code>df</code>), the current branch list read from the xattr, any <code>DEGRADED</code> state and
+"Jellyfin is stopped…".</p>
+<h5><code>do_status_json</code> (command <code>status --json</code>)</h5>
+<p>Python block that produces the JSON read by the Cockpit page:</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pool</code></td>
+<td><code>path</code>, <code>mounted</code>, <code>size/avail/used</code>, <code>service</code> (state of egos-pool), <code>missing[]</code>, <code>degraded</code></td>
+</tr>
+<tr>
+<td><code>branches[]</code></td>
+<td>for each <code>dataN</code>: <code>name</code>, <code>path</code>, <code>in_fstab</code>, <code>fstab_source</code>, <code>mounted</code>, <code>source</code>, <code>label</code>, space, <code>in_pool</code>; if not mounted, <code>stray</code> = files ended up on the system disk</td>
+</tr>
+<tr>
+<td><code>system_disk</code></td>
+<td>system disk (e.g. <code>/dev/nvme0n1</code>)</td>
+</tr>
+<tr>
+<td><code>local</code></td>
+<td><code>path</code>, <code>in_pool</code>, <code>mode</code> (<code>RW</code>/<code>NC</code>), <code>has_files</code> (excluding the <code>.immich</code> markers), <code>system_free</code></td>
+</tr>
+<tr>
+<td><code>jellyfin_held</code></td>
+<td>true if <code>HELD</code> exists</td>
+</tr>
+<tr>
+<td><code>stack</code></td>
+<td><code>.env</code> path and values of <code>JELLYFIN_MEDIA_LOCATION</code>, <code>UPLOAD_LOCATION</code>, <code>DB_DATA_LOCATION</code></td>
+</tr>
+<tr>
+<td><code>samba_media_path</code></td>
+<td><code>path</code> of the <code>[media]</code> section of <code>smb.conf</code></td>
+</tr>
+<tr>
+<td><code>job</code></td>
+<td><code>unit</code>, <code>state</code>, <code>running</code>, <code>log</code>, <code>has_log</code></td>
+</tr>
+</tbody>
+</table>
+<h4>Disk integrity test</h4>
+<h5><code>verify_disk &lt;mountpoint&gt;</code></h5>
+<p>A fake-capacity device accepts writes, says "ok" and returns different data: <code>mkfs</code> succeeds, the ext4 gets
+corrupted later. The test:</p>
+<ol>
+<li>generates 128 MiB of random data in <code>/var/tmp</code>;</li>
+<li>writes it to the disk with <code>conv=fdatasync</code>, within 180 s (otherwise: disk unusable at this speed);</li>
+<li>drops the cache (<code>drop_caches</code>) and compares byte by byte (<code>cmp</code>);</li>
+<li>checks that the kernel logged no new <code>EXT4-fs error</code> in <code>dmesg</code>;</li>
+<li>prints the approximate write speed.
+Returns 1 at the first failure.</li>
+</ol>
+<h4>Removal</h4>
+<h5><code>do_remove</code> (command <code>remove</code>)</h5>
+<p>Retires a branch <strong>without formatting</strong>. Run it with the disk still connected (it also works if it is already unplugged, but
+then any writes not yet on the disk are lost).</p>
+<ol>
+<li>Lists the branches, picks the one from <code>--branch</code> or from numeric input.</li>
+<li>Works out whether the disk is connected (<code>ATTACHED</code>); warns if it is the <strong>last</strong> data disk (new files go back to
+   the system disk).</li>
+<li>Asks to type the branch name exactly (<code>dataN</code>).</li>
+<li>Detaches the branch hot (<code>mfs_branches -&lt;path&gt;</code>).</li>
+<li><code>sync</code>.</li>
+<li>Unmounts: with the disk connected the unmount must succeed <strong>cleanly</strong>; if something keeps the branch open it shows
+   <code>lsof</code>, puts the branch back in the pool and stops ("Do NOT unplug the disk"). With the disk absent it uses <code>umount -f</code>/<code>-l</code>.</li>
+<li>Removes the line from fstab; if the empty folder remains, unlocks and removes it; if it is not empty it warns (files
+   ended up on the system disk).</li>
+<li><code>pool_sync</code>; if no disk is missing any more, <code>jellyfin_release</code>.</li>
+<li>Removes the device from the kernel (<code>/sys/block/&lt;disk&gt;/device/delete</code>) and prints
+   <strong>"YOU CAN NOW SAFELY UNPLUG THE DISK"</strong>.</li>
+</ol>
+<h4>Adding</h4>
+<h5><code>sys_disk</code></h5>
+<p>The disk holding <code>/</code> (e.g. <code>/dev/nvme0n1</code>), found with <code>findmnt</code> + <code>lsblk PKNAME</code>.</p>
+<h5><code>candidates &lt;system_disk&gt;</code></h5>
+<p>Python over <code>lsblk -J</code>: lists the whole disks that can be added, as TSV (<code>name size bus model mountpoint</code>).
+Excludes the system disk, <code>zram</code>, <code>loop</code>, <code>fd</code> (floppy controllers on x86 boards and VMs), eMMC boot/RPMB areas.</p>
+<h5><code>do_disks_json</code> (command <code>disks --json</code>)</h5>
+<p>Converts the output of <code>candidates</code> into JSON (<code>name, size, tran, model, mountpoints</code>). Stops if the system disk
+cannot be determined.</p>
+<h5><code>do_add</code> (command <code>add</code>, default)</h5>
+<ol>
+<li>Determines the system disk (if it cannot, it stops: it never risks formatting it).</li>
+<li>Lists the candidates; picks from <code>--disk</code> or from numeric input.</li>
+<li>Shows the contents; stops if there are mounted partitions.</li>
+<li>Asks to type the device name exactly.</li>
+<li>Picks the first free <code>dataN</code>: it <strong>never reuses</strong> the name of a configured but temporarily absent disk
+   (its fstab line would be overwritten).</li>
+<li><code>wipefs -a</code>, GPT table, one partition at 100 %, <code>mkfs.ext4 -L egos-dataN -m 1</code>.</li>
+<li>Creates the mount point (immutable), adds to fstab
+   <code>UUID=… /srv/egos/disks/dataN ext4 defaults,nofail,noatime,x-systemd.device-timeout=60 0 2</code>, mounts.</li>
+<li><code>verify_disk</code>: if it fails it unmounts, removes the fstab line, removes the folder and stops ("the disk does NOT join the pool").</li>
+<li>Gives ownership to the user created at setup (Samba and the services can write).</li>
+<li><code>pool_sync</code> (hot attach, no service restart). If it fails it exits with code <strong>2</strong> and suggests
+    <code>storage-reattach</code>.</li>
+</ol>
+<h4>Drain</h4>
+<h5><code>do_drain</code> (command <code>drain</code>)</h5>
+<p>Moves files from <code>/srv/egos/local</code> to the data disks keeping the same relative path: no service notices.</p>
+<ol>
+<li>Requires at least one mounted data disk and the pool mounted.</li>
+<li><strong>Greedy plan</strong> (Python): files from largest to smallest, each onto the disk with the most space, keeping 20 GiB
+   in reserve per disk (like <code>minfreespace</code>). Skips files changed in the last 10 minutes and the <code>.immich</code> markers.
+   Prints the plan and the files that do not fit.</li>
+<li>For each disk: <code>rsync -aHAX --from0 --files-from=… --remove-source-files</code> (rsync writes to a temporary name and
+   renames at the end: nobody ever reads a half-written file).</li>
+<li>The folder tree and the <code>.immich</code> markers always stay on the system disk: if every disk is removed the
+   stack finds its folders again (Immich does not start without the markers).</li>
+<li>Reports how many files are left; exits with 1 if some move failed (run it again to retry).</li>
+</ol>
+<h4>Jobs</h4>
+<h5><code>do_start_job &lt;command…&gt;</code> (command <code>job</code>)</h5>
+<p>Accepts only <code>add|remove|link|remount|reattach|drain</code>. Refuses if <code>egos-storage-job</code> is already active, then
+<code>systemd-run --unit=egos-storage-job --collect --setenv=HOME=/root … egos-storage _job &lt;command…&gt;</code>.</p>
+<h5><code>do_run_job &lt;command…&gt;</code> (command <code>_job</code>)</h5>
+<p>Inside the unit: writes the header <code>== &lt;date&gt; egos-storage …</code> to <code>job.log</code>, runs the command with stdin from
+<code>/dev/null</code> appending everything to the log, closes with <code>== END rc=&lt;code&gt; &lt;date&gt;</code> and returns the code.</p>
+<h4>Final dispatcher</h4>
+<p>Takes <code>storage_lock 0</code> for the commands that change something, then routes <code>CMD</code> to the matching function; an
+unknown command prints the usage and exits with 1.</p>
+<hr>
+<h3>Related files and units</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/etc/profile.d/egos-storage.sh</code></td>
+<td><code>storage-*</code> aliases (also in <code>~/.bashrc</code> through <code>/etc/skel</code>, for Cockpit's terminal)</td>
+</tr>
+<tr>
+<td><code>/etc/systemd/system/egos-pool.service</code></td>
+<td>see <a href="#script-systemd-udev-units">systemd-udev-units.md</a></td>
+</tr>
+<tr>
+<td><code>/etc/systemd/system/egos-pool-guard.service</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>/etc/systemd/system/egos-reattach.service</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>/etc/udev/rules.d/90-egos-reattach.rules</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>/etc/systemd/system/{docker,smbd}.service.d/10-egos-pool.conf</code></td>
+<td>docker and Samba start after the pool</td>
+</tr>
+<tr>
+<td><code>/usr/share/cockpit/egos-storage/</code></td>
+<td>web interface, see <a href="#script-cockpit-storage-pool">cockpit-storage-pool.md</a></td>
+</tr>
+</tbody>
+</table></section>
+<section class="script"><h2 class="script-title" id="script-cockpit-storage-pool">Cockpit page "Storage pool"</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Path</strong></td>
+<td><code>/usr/share/cockpit/egos-storage/</code> (<code>manifest.json</code>, <code>index.html</code>, <code>egos-storage.js</code>, <code>egos-storage.css</code>)</td>
+</tr>
+<tr>
+<td><strong>Generated by</strong></td>
+<td>section 11b of the EgOS4 scripts</td>
+</tr>
+<tr>
+<td><strong>Technology</strong></td>
+<td>plain HTML/JS + <code>../base1/cockpit.js</code> (Cockpit 337 ships no PatternFly in base1)</td>
+</tr>
+<tr>
+<td><strong>Access</strong></td>
+<td><code>https://egocenter.local:9090</code> → menu <strong>Storage pool</strong> (position 35; keywords egos, pool, disk, mergerfs, storage, samba)</td>
+</tr>
+</tbody>
+</table>
+<h3>Principle</h3>
+<p>The page is only a front end for <a href="#script-egos-storage"><code>egos-storage</code></a>: it reads the state with
+<code>egos-storage status --json</code> and <code>disks --json</code> and starts every change as <code>egos-storage job …</code> (a systemd unit).
+Closing the page <strong>never interrupts</strong> a format or a copy. All safety checks stay in
+<code>egos-storage</code>. Cockpit administrative access is required (<code>superuser: "require"</code>).</p>
+<h3>Page structure (<code>index.html</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Header</td>
+<td>title, explanation, <strong>Refresh</strong> button</td>
+</tr>
+<tr>
+<td><code>banner-admin</code></td>
+<td>"Administrative access needed": click <em>Limited access</em> at the top right</td>
+</tr>
+<tr>
+<td><code>banner-error</code></td>
+<td>read/start errors</td>
+</tr>
+<tr>
+<td><code>banner-health</code></td>
+<td>disk missing from the pool / pool not mounted</td>
+</tr>
+<tr>
+<td><strong>Pool</strong> card</td>
+<td>status (badge), <strong>Retry missing disks</strong> button, usage bar, table of branches (Disk, Device, Size, Used, Free, State, Remove) with the system-disk row</td>
+</tr>
+<tr>
+<td><strong>Stack data</strong> card</td>
+<td><strong>Empty system disk</strong> (drain) and <strong>Move data to pool</strong> (legacy installs only) buttons, "Jellyfin is stopped" banner, media/photo/DB/Samba paths</td>
+</tr>
+<tr>
+<td><strong>Disks that can be added</strong> card</td>
+<td>table of disks with an <strong>Add to pool</strong> button</td>
+</tr>
+<tr>
+<td><strong>Last operation</strong> card</td>
+<td>job status and log</td>
+</tr>
+<tr>
+<td><code>&lt;dialog id="dlg"&gt;</code></td>
+<td>confirmation dialog reused by every action</td>
+</tr>
+</tbody>
+</table>
+<h3>JavaScript functions (<code>egos-storage.js</code>)</h3>
+<p>Constants: <code>TOOL = /usr/local/sbin/egos-storage</code>, <code>POLL_IDLE = 10000</code> ms, <code>POLL_JOB = 2000</code> ms.
+State: <code>state</code> (last JSON), <code>timer</code>, <code>lastJobRunning</code>. <code>$</code> = <code>document.getElementById</code>.</p>
+<h4>Utilities</h4>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>run(args)</code></td>
+<td><code>cockpit.spawn([TOOL, …args], {superuser: "require"})</code>: runs egos-storage as root</td>
+</tr>
+<tr>
+<td><code>fmtBytes(n)</code></td>
+<td>formats bytes as B/KB/MB/GB/TB/PB (base 1000); <code>-</code> if absent</td>
+</tr>
+<tr>
+<td><code>el(tag, cls, text)</code></td>
+<td>creates a DOM element with class and text (always <code>textContent</code>, never HTML)</td>
+</tr>
+<tr>
+<td><code>badge(text, kind)</code></td>
+<td>creates a <code>&lt;span class="badge kind"&gt;</code></td>
+</tr>
+<tr>
+<td><code>setBadge(node, text, kind)</code></td>
+<td>updates an existing badge</td>
+</tr>
+<tr>
+<td><code>applyTheme(style)</code></td>
+<td>follows Cockpit's light/dark theme (<code>localStorage["shell:style"]</code>, <code>cockpit-style</code> event, <code>prefers-color-scheme</code>) by adding/removing the <code>dark</code> class</td>
+</tr>
+</tbody>
+</table>
+<h4>Rendering</h4>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>renderPool(st)</code></td>
+<td>pool badge (<code>not mounted</code> / <code>degraded</code> / <code>system disk only</code> / <code>ok</code>); usage bar computed <strong>on the data disks only</strong> when there are any (red ≥ 90 %); system-disk row (<code>new files</code> if RW, <code>old files only</code> if NC); one row per branch with status (<code>new files</code>, <code>not in pool</code>, <code>NOT MOUNTED</code>, "stray" files on the system disk) and a Remove button; <code>banner-health</code> if a branch is missing or not in the pool, or if the pool is not mounted</td>
+</tr>
+<tr>
+<td><code>renderStack(st)</code></td>
+<td>key/value list of the stack paths with badge <code>pool</code> / <code>system disk</code> / <code>pool NOT MOUNTED</code></td>
+</tr>
+<tr>
+<td><code>renderDisks(all)</code></td>
+<td>table of the disks that can be added (excluding those already mounted under <code>/srv/egos/disks/</code>); if a disk has mounted partitions it shows "in use: unmount it first" instead of the button</td>
+</tr>
+<tr>
+<td><code>renderJob(st, log)</code></td>
+<td>job badge (<code>running</code>, <code>finished</code>, <code>failed (rc)</code>, <code>idle</code>) read from the <code>== END rc=</code> marker; cleans the <code>\r</code> of rsync/dd progress bars; disables the buttons during a job; shows <strong>Move data to pool</strong> only if the stack is not on the pool; enables <strong>Empty system disk</strong> only if there is a disk in the pool and files are left on the system disk; enables <strong>Retry missing disks</strong> only if there is a problem; shows <code>banner-held</code></td>
+</tr>
+</tbody>
+</table>
+<h4>Loop and actions</h4>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>refresh()</code></td>
+<td>reads <code>status --json</code>, <code>disks --json</code> and the last 40,000 characters of the log; on access denied shows <code>banner-admin</code>, otherwise <code>banner-error</code>; then calls the renderers and reschedules itself every 2 s during a job, every 10 s when idle</td>
+</tr>
+<tr>
+<td><code>startJob(args)</code></td>
+<td><code>egos-storage job …args</code>; on error shows the banner; scrolls to the log and refreshes</td>
+</tr>
+<tr>
+<td><code>dialog({title, body, okText, okKind, confirmWord, checkLabel})</code></td>
+<td>opens the modal and returns a Promise with <code>{checked, typed}</code> or <code>null</code>. If <code>confirmWord</code> is set the OK button stays disabled until exactly that word is typed</td>
+</tr>
+<tr>
+<td><code>askAdd(d)</code></td>
+<td>confirms "Erase and add" by typing the device name → <code>job add --disk D --confirm D</code></td>
+</tr>
+<tr>
+<td><code>askRemove(b)</code></td>
+<td>warns (last disk, files no longer available), confirms by typing <code>dataN</code> → <code>job remove --branch dataN --confirm dataN</code></td>
+</tr>
+<tr>
+<td><code>askLink()</code></td>
+<td>explains the copy and offers the "Also move the Immich photo originals" checkbox → <code>job link --yes [--immich]</code></td>
+</tr>
+<tr>
+<td><code>askReattach()</code></td>
+<td>→ <code>job reattach</code></td>
+</tr>
+<tr>
+<td><code>askDrain()</code></td>
+<td>→ <code>job drain</code></td>
+</tr>
+<tr>
+<td><code>DOMContentLoaded</code></td>
+<td>applies the theme, wires the buttons, first <code>refresh()</code>, shows the body when the Cockpit transport is ready</td>
+</tr>
+</tbody>
+</table>
+<h3>CSS (<code>egos-storage.css</code>)</h3>
+<p>Styling in line with Cockpit (cards, <code>ok</code>/<code>danger</code>/<code>busy</code> badges, <code>warn</code>/<code>danger</code> banners, usage bar, tables,
+modal), with <code>.dark</code> variants and narrow-screen adaptation (the key/value list becomes a single column).</p></section>
+<section class="script"><h2 class="script-title" id="script-systemd-udev-units">systemd units, drop-ins and udev rule</h2>
+<p>All generated by the EgOS4 scripts (identical on amd64 and arm64, except <code>egos-growroot</code>).</p>
+<h3>Boot order</h3>
+<pre><code>1st boot:  egos-sshkeys ─┐
+           (arm64) egos-growroot ─→ first-boot-setup ─→ setup-webapp.sh ─→ reboot
+           egos-pool ─→ docker, smbd ─→ egos-pool-guard
+
+2nd boot:  egos-pool ─→ docker ─→ docker-compose-startup (after time-sync + DNS) ─→ deploy-compose.sh
+                                └→ egos-pool-guard
+
+always:    udev &quot;egos-data*&quot; added ─→ egos-reattach ─→ egos-storage _autoreattach
+</code></pre>
+<h3>Units</h3>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Type</th>
+<th>Ordering / conditions</th>
+<th>Runs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>first-boot-setup.service</code></td>
+<td>oneshot, RemainAfterExit</td>
+<td><code>After/Wants=network.target</code>; only if <code>/var/lib/setup-complete</code> is <strong>missing</strong></td>
+<td><code>/usr/local/bin/setup-webapp.sh</code></td>
+</tr>
+<tr>
+<td><code>docker-compose-startup.service</code></td>
+<td>oneshot, RemainAfterExit</td>
+<td><code>After=network-online.target docker.service</code>, <code>Requires=docker.service</code>; only if <code>setup-complete</code> <strong>exists</strong> and <code>docker-compose-done</code> is <strong>missing</strong>. Drop-in <code>10-timesync.conf</code>: <code>After/Wants=time-sync.target</code>. <code>ExecStartPre</code> waits for DNS up to 120 s</td>
+<td><code>/usr/local/bin/deploy-compose.sh</code></td>
+</tr>
+<tr>
+<td><code>egos-sshkeys.service</code></td>
+<td>oneshot</td>
+<td><code>DefaultDependencies=no</code>, <code>After=local-fs.target</code>, <code>Before=ssh.service ssh.socket sockets.target</code>; only if <code>/etc/ssh/ssh_host_ed25519_key</code> is missing</td>
+<td><code>ssh-keygen -A</code></td>
+</tr>
+<tr>
+<td><code>egos-growroot.service</code> (arm64)</td>
+<td>oneshot</td>
+<td><code>Before=first-boot-setup.service</code>; only if <code>/var/lib/egos-growroot-done</code> is missing</td>
+<td><code>/usr/local/bin/egos-growroot.sh</code></td>
+</tr>
+<tr>
+<td><code>egos-pool.service</code></td>
+<td>simple</td>
+<td><code>After=local-fs.target</code>, <code>Before=docker.service smbd.service egos-pool-guard.service</code>; <code>TimeoutStartSec=150</code>, <code>Restart=on-failure</code> (5 s)</td>
+<td><code>ExecStart=egos-storage _pool</code>, <code>ExecStartPost=egos-storage _pool-ready</code>, <code>ExecStop=-umount /srv/egos/pool</code></td>
+</tr>
+<tr>
+<td><code>egos-pool-guard.service</code></td>
+<td>oneshot</td>
+<td><code>After=docker.service egos-pool.service docker-compose-startup.service</code>, <code>Wants=egos-pool.service</code></td>
+<td><code>egos-storage _guard</code></td>
+</tr>
+<tr>
+<td><code>egos-reattach.service</code></td>
+<td>oneshot, not enabled (udev starts it)</td>
+<td><code>After=egos-pool.service docker.service egos-pool-guard.service</code>; <code>TimeoutStartSec=1200</code></td>
+<td><code>egos-storage _autoreattach</code></td>
+</tr>
+<tr>
+<td><code>egos-storage-job</code></td>
+<td>transient (<code>systemd-run</code>)</td>
+<td>created by <code>egos-storage job …</code>, <code>--collect</code></td>
+<td><code>egos-storage _job …</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Drop-ins</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Contents</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/etc/systemd/system/docker.service.d/10-egos-pool.conf</code></td>
+<td><code>Wants=</code> + <code>After=egos-pool.service</code></td>
+<td>containers restarted by the Docker daemon must find the pool mounted</td>
+</tr>
+<tr>
+<td><code>/etc/systemd/system/smbd.service.d/10-egos-pool.conf</code></td>
+<td>same</td>
+<td>the <code>[media]</code> share is on the pool</td>
+</tr>
+<tr>
+<td><code>/etc/systemd/system/docker-compose-startup.service.d/10-timesync.conf</code></td>
+<td><code>After/Wants=time-sync.target</code></td>
+<td>correct clock before the TLS pulls of the images</td>
+</tr>
+</tbody>
+</table>
+<h3>udev rule</h3>
+<p><code>/etc/udev/rules.d/90-egos-reattach.rules</code>:</p>
+<pre><code>ACTION==&quot;add&quot;, SUBSYSTEM==&quot;block&quot;, ENV{DEVTYPE}==&quot;partition&quot;, ENV{ID_FS_LABEL}==&quot;egos-data*&quot;, \
+  TAG+=&quot;systemd&quot;, ENV{SYSTEMD_WANTS}+=&quot;egos-reattach.service&quot;
+</code></pre>
+<p>udev must not run long jobs (<code>RUN+=</code> is killed after a few seconds): that is why it starts a service.
+At boot every present disk is "added": in that case <code>_autoreattach</code> does nothing.</p>
+<h3>Network configuration</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/etc/systemd/network/20-wired.network</code></td>
+<td><code>Name=eth* en*</code>, <code>DHCP=yes</code> (Wi-Fi is not managed by networkd: <code>setup-webapp.sh</code> configures it as an AP)</td>
+</tr>
+<tr>
+<td><code>/etc/systemd/resolved.conf.d/egos.conf</code></td>
+<td><code>MulticastDNS=no</code>, <code>LLMNR=no</code> (mDNS is done by avahi on 5353, LLMNR by wsdd2 on 5355: no conflicts)</td>
+</tr>
+<tr>
+<td><code>/etc/resolv.conf</code></td>
+<td>link to <code>/run/systemd/resolve/stub-resolv.conf</code></td>
+</tr>
+<tr>
+<td><code>/etc/avahi/avahi-daemon.conf</code></td>
+<td><code>host-name=setupbox</code> (commented out at the end of setup), IPv4+IPv6, publishes addresses</td>
+</tr>
+</tbody>
+</table>
+<h3>Other system files</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/etc/issue</code></td>
+<td><code>EgOS 4.3.0 - Debian GNU/Linux 13</code>, URL <code>http://egocenter.local</code> and IP (<code>\4</code>), home page <code>http://egocenter.local:8000</code>, admin console <code>https://egocenter.local:9090</code>, storage and extras commands</td>
+</tr>
+<tr>
+<td><code>/etc/motd</code></td>
+<td>empty; <code>egos-storage</code> writes only the missing-disk warning there</td>
+</tr>
+<tr>
+<td><code>/etc/egos-release</code></td>
+<td><code>EGOS_VERSION</code>, <code>EGOS_ARCH</code>, <code>EGOS_BUILD_DATE</code>, <code>EGOS_BUILD_SCRIPT</code>, <code>IMMICH_VERSION</code>, <code>JELLYFIN_VERSION</code></td>
+</tr>
+<tr>
+<td><code>/etc/apt/sources.list.d/docker.list</code></td>
+<td>Docker repository with <code>signed-by=/etc/apt/keyrings/docker.gpg</code> (security updates)</td>
+</tr>
+</tbody>
+</table></section>
+<h2 class="group" id="group-optional-services">Optional services</h2>
+<section class="script"><h2 class="script-title" id="script-egos-extras">egos-extras</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Path</strong></td>
+<td><code>/usr/local/bin/egos-extras</code></td>
+</tr>
+<tr>
+<td><strong>Generated by</strong></td>
+<td>section 11a of the EgOS4 scripts</td>
+</tr>
+<tr>
+<td><strong>Language</strong></td>
+<td>Bash (<code>set -euo pipefail</code>)</td>
+</tr>
+<tr>
+<td><strong>Stack sources</strong></td>
+<td><code>/usr/local/share/stack/extras/&lt;name&gt;</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Purpose</h3>
+<p>Enables or disables the <strong>optional stacks</strong>, present in the image but <strong>not started</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Contents</th>
+<th>Target folder</th>
+<th>Ports</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>qbtt</code></td>
+<td>qBittorrent-nox + <em>torrent-web</em> search page + automatic sorting</td>
+<td><code>~/app/qbtt/qbittorrent-nox-easywebapp</code></td>
+<td>8082 (Web UI), 8083 (search), 6881 tcp/udp</td>
+</tr>
+<tr>
+<td><code>bento</code></td>
+<td>BentoPDF (PDF tools in the browser)</td>
+<td><code>~/app/pdf/bento</code></td>
+<td>8080</td>
+</tr>
+</tbody>
+</table>
+<h3>Usage</h3>
+<pre><code>egos-extras list               available stacks and status
+egos-extras enable &lt;name&gt;      copies into ~/app, creates .env, starts
+egos-extras disable &lt;name&gt;     stops (files and data stay)
+</code></pre>
+<h3>Initialisation</h3>
+<p><code>U</code> = user from <code>/var/lib/setup-data.json</code> (must exist, otherwise "Setup user cannot be determined"),
+<code>H</code> = their home from <code>getent passwd</code>.</p>
+<h3>Functions</h3>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dest_of &lt;name&gt;</code></td>
+<td>target folder of the stack; returns 1 for unknown names</td>
+</tr>
+<tr>
+<td><code>compose_of &lt;name&gt;</code></td>
+<td>compose file: <code>bento.yml</code> for bento, <code>docker-compose.yml</code> for the others</td>
+</tr>
+<tr>
+<td><code>media_dir</code></td>
+<td>value of <code>JELLYFIN_MEDIA_LOCATION</code> in the main stack's <code>.env</code>, or <code>/srv/egos/pool/media</code></td>
+</tr>
+<tr>
+<td><code>as_user &lt;paths…&gt;</code></td>
+<td>when run as root, <code>chown -R</code> to the setup user</td>
+</tr>
+<tr>
+<td><code>dc &lt;dir&gt; &lt;arguments…&gt;</code></td>
+<td><code>docker compose -f &lt;compose_of $NAME&gt; …</code> inside <code>&lt;dir&gt;</code></td>
+</tr>
+<tr>
+<td><code>do_list</code></td>
+<td>for <code>qbtt</code> and <code>bento</code> prints name, status (<code>not installed</code> / <code>running</code> / <code>stopped</code>) and folder</td>
+</tr>
+<tr>
+<td><code>do_enable</code></td>
+<td>creates the folder, copies the files with <code>cp -r --update=none</code> (it <strong>never overwrites</strong> existing files); if there is an <code>env.example</code> and no <code>.env</code> it generates one replacing <code>__MEDIA__</code>, <code>__UID__</code>, <code>__GID__</code> (mode 600); for qbtt it creates <code>qbittorrent/config</code> and the folders <code>downloads, Films, Musics, SerieTv</code>; if <code>.env</code> still contains <code>CHANGEME</code> it stops and asks you to edit it; otherwise <code>up -d --build</code>; for qbtt it reminds you to follow the README</td>
+</tr>
+<tr>
+<td><code>do_disable</code></td>
+<td><code>docker compose down</code> (if installed)</td>
+</tr>
+</tbody>
+</table>
+<p>Dispatcher: <code>list</code> (default), <code>enable &lt;name&gt;</code>, <code>disable &lt;name&gt;</code>; otherwise it prints the usage and exits with 1.</p>
+<h3>Files of the <code>qbtt</code> stack</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>docker-compose.yml</code></td>
+<td>services <code>torrent-web</code> (local build, port <code>WEB_PORT</code>) and <code>qbittorrent-nox</code> (official image <code>qbittorrentofficial/qbittorrent-nox:${QBT_VERSION}</code>, <code>stop_grace_period: 30m</code>, <code>/tmp</code> on tmpfs, volumes config, scripts (ro), downloads, Films, Musics, SerieTv)</td>
+</tr>
+<tr>
+<td><code>dockerfile</code></td>
+<td><code>python:3.13-slim</code>, non-root user uid 1000, TCP healthcheck on the port</td>
+</tr>
+<tr>
+<td><code>.dockerignore</code></td>
+<td>only <code>torrent_web.py</code> and <code>dockerfile</code> go into the image</td>
+</tr>
+<tr>
+<td><code>README.md</code></td>
+<td>first-start instructions (temporary password from the logs, Web UI options, "Run on torrent finished" command)</td>
+</tr>
+<tr>
+<td><code>torrent_web.py</code></td>
+<td>see <a href="#script-torrent-web">torrent_web.md</a></td>
+</tr>
+<tr>
+<td><code>scripts/qbt-sort.py</code></td>
+<td>see <a href="#script-qbt-sort">qbt-sort.md</a></td>
+</tr>
+<tr>
+<td><code>scripts/audiotags.py</code></td>
+<td>see <a href="#script-audiotags">audiotags.md</a></td>
+</tr>
+<tr>
+<td><code>env.example</code></td>
+<td><code>WEB_PORT=8083</code>, <code>WEB_PASSWORD</code>, <code>QBIT_URL/USER/PASS</code>, <code>QBT_VERSION=5.2.4-1</code>, ports, <code>PUID/PGID</code>, paths</td>
+</tr>
+</tbody>
+</table>
+<h3>Files of the <code>bento</code> stack</h3>
+<p><code>bento.yml</code>: service <code>bentopdf</code>, image <code>ghcr.io/alam00000/bentopdf-simple:latest</code>, port 8080, <code>DISABLE_IPV6=true</code>.</p></section>
+<section class="script"><h2 class="script-title" id="script-torrent-web">torrent_web.py</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Path</strong></td>
+<td><code>extras/qbtt/torrent_web.py</code> → container <code>torrent-web</code></td>
+</tr>
+<tr>
+<td><strong>Generated by</strong></td>
+<td>section 11a of the EgOS4 scripts</td>
+</tr>
+<tr>
+<td><strong>Language</strong></td>
+<td>Python 3, standard library only</td>
+</tr>
+<tr>
+<td><strong>Port</strong></td>
+<td><code>WEB_PORT</code> (default 8083)</td>
+</tr>
+</tbody>
+</table>
+<h3>Purpose</h3>
+<p>A small web page for the LAN: you paste one or more searches (one per line), the page runs them through qBittorrent's
+search engine, shows the results with filters (type, seeders, size, text) and adds them to the
+downloads with one click.</p>
+<h3>Configuration (environment variables)</h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Default</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>QBIT_URL</code></td>
+<td><code>http://localhost:8082</code></td>
+<td>address of the qBittorrent Web UI</td>
+</tr>
+<tr>
+<td><code>QBIT_USER</code>, <code>QBIT_PASS</code></td>
+<td>empty</td>
+<td>Web UI credentials</td>
+</tr>
+<tr>
+<td><code>WEB_HOST</code></td>
+<td><code>0.0.0.0</code></td>
+<td>listen address</td>
+</tr>
+<tr>
+<td><code>WEB_PORT</code></td>
+<td><code>8083</code></td>
+<td>page port</td>
+</tr>
+<tr>
+<td><code>WEB_PASSWORD</code></td>
+<td>empty</td>
+<td>if set, the page asks for user/password (Basic, any user)</td>
+</tr>
+<tr>
+<td><code>SEARCH_TIMEOUT</code></td>
+<td>60 s</td>
+<td>(constant) maximum duration of a search</td>
+</tr>
+</tbody>
+</table>
+<h3>Classes and functions</h3>
+<h4><code>QbitError(Exception)</code></h4>
+<p>Error with a message readable by the user.</p>
+<h4><code>QBittorrent</code> — minimal Web API client</h4>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>__init__(url, user, password)</code></td>
+<td>stores the parameters, creates a lock and a session</td>
+</tr>
+<tr>
+<td><code>_new_session()</code></td>
+<td>urllib opener with a cookie jar and <code>Referer</code>/<code>Origin</code> headers (required by qBittorrent)</td>
+</tr>
+<tr>
+<td><code>_request(path, data, params, timeout)</code></td>
+<td>call to <code>/api/v2/&lt;path&gt;</code>; returns <code>(status, text)</code>; turns network errors into <code>QbitError</code> ("not reachable…")</td>
+</tr>
+<tr>
+<td><code>login()</code></td>
+<td>thread-safe; <code>auth/login</code>; accepts the <code>Ok.</code> body or checks with <code>app/version</code> (qBittorrent 5.2+ or localhost bypass); 403 = banned after too many attempts</td>
+</tr>
+<tr>
+<td><code>api(path, …)</code></td>
+<td><code>login()</code> + request; on 403 logs in again once; ≥ 400 → <code>QbitError</code></td>
+</tr>
+<tr>
+<td><code>enabled_plugins()</code></td>
+<td>names of the enabled search plugins</td>
+</tr>
+<tr>
+<td><code>search(text, category)</code></td>
+<td><code>search/start</code> → waits for <code>Stopped</code> (max 60 s) → <code>search/results</code>; always <code>search/stop</code> and <code>search/delete</code>; normalises the results (<code>title, seeders, leechers, mb, site, page, link</code>) sorted by seeders</td>
+</tr>
+<tr>
+<td><code>add(link)</code></td>
+<td><code>torrents/add</code> with the URL or the magnet</td>
+</tr>
+</tbody>
+</table>
+<p><code>QB</code> = global instance.</p>
+<h4><code>PAGE</code> (constant)</h4>
+<p>HTML/CSS/JS page. Internal JS functions: <code>api(path, body)</code> (JSON fetch), <code>status(msg, error)</code>, <code>safeLink(u)</code> (accepts
+only <code>http(s)://</code>), <code>download(btn, link)</code>, <code>showGroup(query, results)</code> (renders a group of results).</p>
+<h4><code>Handler(BaseHTTPRequestHandler)</code></h4>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>log_message</code></td>
+<td>logs to stdout with the client address</td>
+</tr>
+<tr>
+<td><code>_authorized()</code></td>
+<td>if <code>WEB_PASSWORD</code> is set, checks the Basic header with <code>hmac.compare_digest</code>; otherwise 401 + <code>WWW-Authenticate</code></td>
+</tr>
+<tr>
+<td><code>_send(code, body, ctype)</code></td>
+<td>JSON or text response, <code>Cache-Control: no-store</code></td>
+</tr>
+<tr>
+<td><code>_json_body()</code></td>
+<td>accepts only <code>application/json</code> (blocks forms from other sites: CSRF) and at most 100,000 bytes</td>
+</tr>
+<tr>
+<td><code>do_GET()</code></td>
+<td><code>/</code> or <code>/index.html</code> → page; <code>/api/plugins</code> → enabled plugins (502 if qBittorrent does not answer); anything else → 404</td>
+</tr>
+<tr>
+<td><code>do_POST()</code></td>
+<td><code>/api/search</code> <code>{query, type}</code> → results; <code>/api/add</code> <code>{link}</code> (must start with <code>magnet:</code>, <code>http://</code>, <code>https://</code>) → adds it; errors 400/404/502</td>
+</tr>
+</tbody>
+</table>
+<h4><code>main()</code></h4>
+<p>Starts <code>ThreadingHTTPServer</code>, warns if <code>WEB_PASSWORD</code> is missing, shuts down cleanly on Ctrl+C.</p></section>
+<section class="script"><h2 class="script-title" id="script-qbt-sort">qbt-sort.py</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Path</strong></td>
+<td><code>extras/qbtt/scripts/qbt-sort.py</code> → in the container <code>/scripts/qbt-sort.py</code> (read-only)</td>
+</tr>
+<tr>
+<td><strong>Generated by</strong></td>
+<td>section 11a of the EgOS4 scripts</td>
+</tr>
+<tr>
+<td><strong>Started by</strong></td>
+<td>qBittorrent, "Run external program on torrent finished": <code>python3 /scripts/qbt-sort.py "%K"</code></td>
+</tr>
+<tr>
+<td><strong>Log</strong></td>
+<td><code>/config/qbt-sort.log</code> (on the host: <code>qbittorrent/config/qbt-sort.log</code>)</td>
+</tr>
+<tr>
+<td><strong>Trial run</strong></td>
+<td><code>docker exec qbittorrent-nox python3 /scripts/qbt-sort.py &lt;hash&gt; --dry-run</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Purpose</h3>
+<p>Sorts completed torrents into <code>/Films</code>, <code>/SerieTv</code> or <code>/Musics/&lt;Artist&gt;/&lt;Album&gt;/</code> (the layout Jellyfin expects).
+It uses the Web API (<code>torrents/setLocation</code>), so qBittorrent itself moves the files and seeding continues from the new
+location. It never makes qBittorrent fail: every exception is logged and the script exits with 1.</p>
+<h3>Constants</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>LOG</code>, <code>CONF</code></td>
+<td>log file and <code>qBittorrent.conf</code></td>
+</tr>
+<tr>
+<td><code>API</code></td>
+<td><code>http://127.0.0.1:&lt;port&gt;/api/v2/</code> (no login needed: "Bypass authentication for clients on localhost")</td>
+</tr>
+<tr>
+<td><code>DEST</code></td>
+<td><code>video_movie → /Films</code>, <code>video_series → /SerieTv</code>, <code>audio → /Musics</code></td>
+</tr>
+<tr>
+<td><code>EXT_VIDEO</code>, <code>EXT_AUDIO</code></td>
+<td>recognised extensions</td>
+</tr>
+<tr>
+<td><code>EXT_RISKY</code></td>
+<td>executables and scripts (<code>exe, msi, bat, ps1, sh, jar, apk, dmg, deb, …</code>)</td>
+</tr>
+<tr>
+<td><code>WARNING_FILE</code></td>
+<td><code>POTENTIALLY HARMFUL</code> (Italian <code>POTENZIALMENTE DANNOSO</code> before 4.2.3)</td>
+</tr>
+<tr>
+<td><code>RE_SERIES</code></td>
+<td><code>S01E02</code>, <code>S01</code>, <code>1x02</code>, <code>Season 1</code>/<code>Stagione 2</code>, <code>Complete Series</code>, <code>Ep 01</code> (season/stagione only when followed by a number: "The Four Seasons" is a film)</td>
+</tr>
+<tr>
+<td><code>RE_YEAR</code>, <code>RE_TAG</code></td>
+<td>title + year (takes the last one: "Blade.Runner.2049.2017"); cut at quality tags (<code>1080p</code>, <code>bluray</code>, <code>x265</code>, <code>ita</code>, …)</td>
+</tr>
+<tr>
+<td><code>RE_FEAT</code>, <code>RE_ARTIST_ALBUM</code></td>
+<td>removal of "feat./ft./featuring"; "Artist - Album" pattern</td>
+</tr>
+<tr>
+<td><code>UNKNOWN_ARTIST</code>, <code>VARIOUS_ARTISTS</code></td>
+<td>fallback values</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>webui_port()</code></td>
+<td>Web UI port: from <code>QBT_WEBUI_PORT</code> or, since the image's <code>doas</code> clears the environment, from <code>WebUI\Port=</code> in <code>qBittorrent.conf</code>; default <code>8082</code></td>
+</tr>
+<tr>
+<td><code>movie_folder(name)</code></td>
+<td><code>'BlacKkKlansman.2018.1080p.BluRay'</code> → <code>'BlacKkKlansman (2018)'</code>: strips the video extension, extracts title and year (or cuts at the first tag), dots/underscores → spaces, removes invalid characters</td>
+</tr>
+<tr>
+<td><code>clean_name(name)</code></td>
+<td>makes a tag usable as a folder name (<code>AC/DC</code> → <code>AC-DC</code>), max 150 characters</td>
+</tr>
+<tr>
+<td><code>main_artist(artist)</code></td>
+<td>strips the "feat. …" part</td>
+</tr>
+<tr>
+<td><code>names_from_title(name)</code></td>
+<td>fallback: <code>(artist, album)</code> from "Artist - Album (Year) [FLAC]"</td>
+</tr>
+<tr>
+<td><code>music_names(t, files)</code></td>
+<td><code>(artist, album)</code> for an audio torrent: majority of the track tags (albumartist &gt; artist; with ≥ 3 artists and no majority = "Various Artists"; album if ≥ 80 % agree), then the torrent name, then "Unknown Artist"/"Unknown Album"</td>
+</tr>
+<tr>
+<td><code>free_name(parent, name, own)</code></td>
+<td><code>name</code>, or <code>name (2)</code>, <code>name (3)</code>… if it already exists and is not the torrent's current location (existing albums are never merged)</td>
+</tr>
+<tr>
+<td><code>risky_files(files)</code></td>
+<td>list of files with a risky extension (also <code>song.mp3.exe</code>)</td>
+</tr>
+<tr>
+<td><code>mark_risky(name, risky, folder, dry)</code></td>
+<td>writes a <code>WARN</code> line to the log and, if the torrent has its own folder, creates the <code>POTENTIALLY HARMFUL</code> file there with the list</td>
+</tr>
+<tr>
+<td><code>log(msg)</code></td>
+<td>timestamped line on stdout and in the log file</td>
+</tr>
+<tr>
+<td><code>api(path, data)</code></td>
+<td>GET/POST to the local Web API</td>
+</tr>
+<tr>
+<td><code>torrent_info(hash_)</code></td>
+<td>torrent data (<code>torrents/info</code>) or <code>None</code></td>
+</tr>
+<tr>
+<td><code>wait_for_move(hash_, max_seconds=3600)</code></td>
+<td>waits until the state is no longer <code>moving</code> (e.g. from the temporary folder)</td>
+</tr>
+<tr>
+<td><code>root_folder(files)</code></td>
+<td>name of the root folder if all files are in a single one</td>
+</tr>
+<tr>
+<td><code>classify(name, files)</code></td>
+<td><code>audio</code> if the audio files weigh more; <code>video_series</code> if the name or ≥ 2 videos look like episodes; otherwise <code>video_movie</code>; <code>None</code> if there is neither audio nor video</td>
+</tr>
+<tr>
+<td><code>main()</code></td>
+<td>see below</td>
+</tr>
+</tbody>
+</table>
+<h3>Flow of <code>main()</code></h3>
+<ol>
+<li>Arguments: <code>&lt;hash&gt;</code> and optional <code>--dry-run</code>.</li>
+<li><code>wait_for_move</code>; if the torrent does not exist → <code>ERROR</code>.</li>
+<li>Reads the files (<code>torrents/files</code>).</li>
+<li><strong>Risky files</strong> → <code>mark_risky</code>, log <code>HOLD</code>, the torrent stays in <code>/downloads</code>.</li>
+<li><code>classify</code>; no audio/video → <code>SKIP</code>.</li>
+<li>Works out destination and renaming:
+   - single-file film → folder <code>Title (Year)</code>;
+   - film already in a folder → renames the folder to <code>Title (Year)</code>;
+   - audio → <code>/Musics/&lt;Artist&gt;/&lt;Album&gt;</code> (artist folder created if missing, album with <code>free_name</code>).</li>
+<li>Already in the right place → <code>SKIP</code>; destination not mounted → <code>ERROR</code>.</li>
+<li><code>--dry-run</code> → log <code>DRY</code> and stop.</li>
+<li><code>torrents/renameFolder</code> if needed, <code>torrents/setLocation</code>, waits for the move to finish; if the location has not
+   changed (e.g. permissions) → <code>ERROR</code>, otherwise <code>MOVE</code>.</li>
+</ol>
+<p>Log prefixes: <code>MOVE</code>, <code>SKIP</code>, <code>HOLD</code>, <code>WARN</code>, <code>MKDIR</code>, <code>DRY</code>, <code>ERROR</code>.</p></section>
+<section class="script"><h2 class="script-title" id="script-audiotags">audiotags.py</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Path</strong></td>
+<td><code>extras/qbtt/scripts/audiotags.py</code> (imported by <code>qbt-sort.py</code>)</td>
+</tr>
+<tr>
+<td><strong>Generated by</strong></td>
+<td>section 11a of the EgOS4 scripts</td>
+</tr>
+<tr>
+<td><strong>Language</strong></td>
+<td>Python 3, standard library only (the qBittorrent image has no <code>mutagen</code>)</td>
+</tr>
+</tbody>
+</table>
+<h3>Purpose</h3>
+<p>Minimal reader for the <strong>albumartist</strong>, <strong>artist</strong>, <strong>album</strong> tags.
+Formats: MP3 (ID3v2.2/2.3/2.4 + ID3v1), FLAC, Ogg Vorbis, Opus, M4A/MP4. Any other format → empty tags.</p>
+<pre><code class="language-python">read_tags(path) -&gt; {&quot;albumartist&quot;: str|None, &quot;artist&quot;: str|None, &quot;album&quot;: str|None}
+</code></pre>
+<p>Command-line use (debugging): <code>python3 audiotags.py file1.mp3 file2.flac</code> prints the name and tags.</p>
+<h3>Constants</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>KEYS</code></td>
+<td><code>("albumartist", "artist", "album")</code></td>
+</tr>
+<tr>
+<td><code>ID3_MAP</code></td>
+<td>ID3 frames: <code>TPE2/TP2</code> → albumartist, <code>TPE1/TP1</code> → artist, <code>TALB/TAL</code> → album</td>
+</tr>
+<tr>
+<td><code>VORBIS_MAP</code></td>
+<td><code>ALBUMARTIST</code>/<code>ALBUM ARTIST</code> → albumartist, <code>ARTIST</code>, <code>ALBUM</code></td>
+</tr>
+<tr>
+<td><code>MP4_MAP</code>, <code>MP4_CONTAINERS</code></td>
+<td>atoms <code>aART</code>, <code>©ART</code>, <code>©alb</code>; containers <code>moov udta meta ilst</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>_empty()</code></td>
+<td>dictionary with the three keys set to <code>None</code></td>
+</tr>
+<tr>
+<td><code>_clean(s)</code></td>
+<td>NUL → <code>/</code>, strips spaces and <code>/</code> at the edges, empty string → <code>None</code></td>
+</tr>
+<tr>
+<td><code>_syncsafe(b)</code></td>
+<td>decodes an ID3 "syncsafe" integer (7 bits per byte)</td>
+</tr>
+<tr>
+<td><code>_id3_text(data)</code></td>
+<td>decodes a text frame according to the encoding byte (0 Latin-1, 1 UTF-16, 2 UTF-16-BE, 3 UTF-8); for v2.4 multiple values (NUL-separated) keeps the first</td>
+</tr>
+<tr>
+<td><code>read_id3v2(f)</code></td>
+<td>reads the ID3v2 header at the start of the file, handles unsynchronisation (global in v2.2/2.3, per frame in v2.4) and the extended header, reads the mapped frames up to the padding; returns <code>(tags, tag_end)</code></td>
+</tr>
+<tr>
+<td><code>read_id3v1(f)</code></td>
+<td>reads the final 128 <code>TAG</code> bytes (artist bytes 33–63, album 63–93)</td>
+</tr>
+<tr>
+<td><code>_vorbis_comments(b)</code></td>
+<td>parses a Vorbis comment block according to <code>VORBIS_MAP</code> (first value wins)</td>
+</tr>
+<tr>
+<td><code>read_flac(f, start)</code></td>
+<td>checks <code>fLaC</code>, walks the metadata blocks and reads the type-4 block (VORBIS_COMMENT)</td>
+</tr>
+<tr>
+<td><code>read_ogg(f, max_bytes=16 MiB)</code></td>
+<td>reassembles the 2nd logical packet from the <code>OggS</code> pages (it can span many pages if it holds the cover art) and reads it as a Vorbis (<code>\x03vorbis</code>) or Opus (<code>OpusTags</code>) comment</td>
+</tr>
+<tr>
+<td><code>read_mp4(f)</code></td>
+<td>walks the atoms with the inner function <code>walk(start, stop, depth)</code> (max depth 6, 64-bit atoms, <code>meta</code> with 4 version bytes) and reads the <code>data</code> child of the atoms in <code>MP4_MAP</code></td>
+</tr>
+<tr>
+<td><code>read_tags(path)</code></td>
+<td>picks the reader from the extension: m4a/mp4/aac/alac/m4b → MP4; ogg/opus/oga → Ogg; otherwise ID3v2 (FLAC can also start with ID3) then FLAC, falling back to ID3v1 for the missing fields. I/O or format errors → empty tags</td>
+</tr>
+</tbody>
+</table></section>
+</body>
+</html>
