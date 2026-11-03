@@ -62,6 +62,17 @@ built from this repo has the same root password: change it before building, or r
 - After installing, logged in as the user created at the first boot: `sudo passwd root` to set a new
   root password, or `sudo passwd -l root` to lock root (sudo keeps working).
 
+**WARNING: the setup Wi-Fi `SetupBox` has a fixed, public passphrase, `setup1234`, the same on every box.
+Until the first-boot form is sent, anyone in Wi-Fi range can join it and create the user in your place.**
+
+- Before building: replace `setup1234` in both places of each script, the `wpa_passphrase=setup1234` line
+  of `setup-webapp.sh` and the `sed -i 's/^wpa_passphrase=setup1234$/...'` line that adds the country code
+  (`builder-amd64/EgOS4-amd64.sh`, `builder-arm64-raspPi/EgOS4-arm64.sh`). The passphrase needs 8 to 63
+  characters.
+- Otherwise: do the first boot in a trusted place, or over Ethernet (`http://setupbox.local`), and send the
+  form right away. The access point exists only until then: after the form it is stopped and its
+  configuration is deleted.
+
 ## License
 
 GPL-3.0-or-later: see [LICENSE](LICENSE). The logos of the services shown on the EgOS home page
