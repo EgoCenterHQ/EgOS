@@ -24,7 +24,7 @@ optional stacks (`egos-extras enable qbtt`) and anything the user adds appear wi
 3. **Name, description, icon, order**: `egos.home.*` labels, otherwise defaults for known images (`KNOWN`:
    Immich, Jellyfin, qBittorrent, torrent-web, BentoPDF, Multi-scrobbler), otherwise the container name and
    image. Without `icons/<id>.svg` the card shows the initial on a colour derived from the name.
-4. **State** from Docker: `on`; `warn` (running but `(unhealthy)`: yellow border, "non sano"); `off` (grey,
+4. **State** from Docker: `on`; `warn` (running but `(unhealthy)`: yellow border, "unhealthy"); `off` (grey,
    not clickable). A stopped container keeps its card if it has a `port` label or was seen running since
    egos-home started.
 5. **Static cards** (`STATIC`): services that are not containers — Cockpit (9090, https), checked by
