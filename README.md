@@ -61,3 +61,8 @@ built from this repo has the same root password: change it before building, or r
   (the `echo root:CHANGE_ME | chroot "$1" chpasswd` hook).
 - After installing, logged in as the user created at the first boot: `sudo passwd root` to set a new
   root password, or `sudo passwd -l root` to lock root (sudo keeps working).
+
+## License
+
+GPL-3.0-or-later: see [LICENSE](LICENSE). The logos of the services shown on the EgOS home page
+belong to their owners and are not covered by this license: see [NOTICE](NOTICE).
