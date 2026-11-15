@@ -4,6 +4,25 @@ EgOS turns a small home computer into a self-hosted media centre: **Jellyfin** (
 **Immich** (phone photo backup), a **home page** with a card for every service (`:8000`), a **Samba** share and the **Cockpit** admin console, on Debian 13 "trixie".
 Disks are joined into a single **mergerfs pool** that can grow, shrink and survive a missing disk.
 
+## Built on
+
+EgOS is plain **Debian** plus a **Docker Compose** stack. It is not a fork: no kernel of its own (Debian's on
+PC, Raspberry Pi's on the Pi), no patched packages, nothing that `apt` doesn't know about.
+
+| Layer | What EgOS uses |
+|---|---|
+| Base system | [Debian 13 "trixie"](https://www.debian.org/releases/trixie/) (`main contrib non-free non-free-firmware` + `trixie-security`), systemd, systemd-networkd |
+| amd64 image | [live-build](https://live-team.pages.debian.net/live-manual/) hybrid ISO (BIOS + UEFI) with the Debian installer, fully automated by a [preseed](https://www.debian.org/releases/trixie/amd64/apb.en.html) file |
+| arm64 image | [mmdebstrap](https://gitlab.mister-muffin.de/josch/mmdebstrap) root filesystem with the Raspberry Pi kernel and firmware (`linux-image-rpi-v8`, `raspi-firmware`) from [archive.raspberrypi.com](https://archive.raspberrypi.com/debian/), written to a disk image |
+| Containers | [Docker Engine](https://docs.docker.com/engine/install/debian/) + [Docker Compose v2](https://docs.docker.com/compose/) from Docker's official apt repository (key fingerprint-checked, repository kept on the box for updates) |
+| Apps | [Immich](https://immich.app/) and [Jellyfin](https://jellyfin.org/) as Compose services with pinned versions, plus the EgOS home page |
+| Storage | [mergerfs](https://github.com/trapexit/mergerfs) (Debian package) over ext4 disks, managed by `egos-storage` and a systemd unit |
+| Admin and sharing | [Cockpit](https://cockpit-project.org/) (with an EgOS storage page), [Samba](https://www.samba.org/) + wsdd2, Avahi (`.local` names), OpenSSH |
+| First boot | hostapd + dnsmasq for the temporary setup Wi-Fi, and a small Python setup page |
+
+The box therefore stays a normal Debian server: `apt` updates the system and Docker, and `docker compose`
+in `~/app/repos` manages the stack.
+
 Two editions, each a self-contained build script with a throwaway-container builder:
 
 | Folder | Builds | Script |
