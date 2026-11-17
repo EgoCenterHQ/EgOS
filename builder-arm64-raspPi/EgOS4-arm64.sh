@@ -461,7 +461,8 @@ class Handler(BaseHTTPRequestHandler):
             self.wfile.write(HTML.replace('<form', f'<p style="color:#f66">{error}</p><form', 1).encode('utf-8'))
             return
         # setup-webapp.sh polls for this file: it must appear complete, never half written
-        with open('/var/lib/setup-data.json.tmp', 'w') as f:
+        # 0600: it holds the user password in clear text
+        with open(os.open('/var/lib/setup-data.json.tmp', os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600), 'w') as f:
             json.dump(result, f)
         os.replace('/var/lib/setup-data.json.tmp', '/var/lib/setup-data.json')
         self.send_response(200)
@@ -2534,6 +2535,8 @@ set -euo pipefail
 
 SRC=/usr/local/share/stack/extras
 U=$(python3 -c "import json;print(json.load(open('/var/lib/setup-data.json'))['user'])" 2>/dev/null || true)
+# setup-data.json is root-only (0600): without sudo the setup user is the caller
+[ -n "$U" ] || [ "$(id -u)" -eq 0 ] || U=$(id -un)
 [ -n "$U" ] && id "$U" >/dev/null 2>&1 || { echo "Setup user cannot be determined."; exit 1; }
 H=$(getent passwd "$U" | cut -d: -f6)
 
