@@ -420,6 +420,7 @@ ETH=$(find /sys/class/net -maxdepth 1 -name 'en*' -o -name 'eth*' | head -1 | xa
 
 # --- WiFi AP (only if hardware exists) ---
 if [ -n "$WIFI" ] && [ -d "/sys/class/net/$WIFI" ]; then
+    rfkill unblock wlan 2>/dev/null || true
     ip link set "$WIFI" down 2>/dev/null || true
     ip addr flush dev "$WIFI" 2>/dev/null || true
     ip addr add 192.168.50.1/24 dev "$WIFI"
@@ -437,6 +438,8 @@ auth_algs=1
 ignore_broadcast_ssid=0
 wpa=2
 wpa_passphrase=setup1234
+country_code=IT
+ieee80211d=1
 wpa_key_mgmt=WPA-PSK
 rsn_pairwise=CCMP
 HEOF
@@ -526,6 +529,9 @@ chmod +x "$OVL"/usr/local/bin/setup-webapp.sh
 cat > "$OVL"/usr/local/bin/webapp.py <<'WEBAPP_EOF'
 #!/usr/bin/env python3
 import json
+import os
+import pwd
+import re
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import parse_qs
 
@@ -564,6 +570,23 @@ HTML = """<!DOCTYPE html>
 </html>
 """
 
+def invalid(r):
+    """Error message, or None. The values reach useradd, chpasswd ("user:pass" per
+    line) and the stack .env (single-quoted), so reject what would break them."""
+    if not re.fullmatch(r'[a-z_][a-z0-9_-]{0,31}', r['user']):
+        return 'Username: lowercase letters, digits, "_" or "-", starting with a letter.'
+    try:
+        pwd.getpwnam(r['user'])
+        return 'That username is already a system account: choose another.'
+    except KeyError:
+        pass
+    if not re.fullmatch(r'[^@\s]+@[^@\s]+\.[^@\s]+', r['email']):
+        return 'Invalid email.'
+    if not r['password'] or not r['password'].isprintable() or "'" in r['password']:
+        return 'Password: required, no single quotes or control characters.'
+    return None
+
+
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, format, *args): pass
 
@@ -577,19 +600,28 @@ class Handler(BaseHTTPRequestHandler):
         length = int(self.headers.get('Content-Length', 0))
         data = parse_qs(self.rfile.read(length).decode())
         result = {
-            'email': data.get('email', [''])[0],
-            'user': data.get('user', [''])[0],
+            'email': data.get('email', [''])[0].strip(),
+            'user': data.get('user', [''])[0].strip(),
             'password': data.get('password', [''])[0]
         }
-        with open('/var/lib/setup-data.json', 'w') as f:
+        error = invalid(result)
+        if error:
+            self.send_response(400)
+            self.send_header('Content-type', 'text/html')
+            self.end_headers()
+            self.wfile.write(HTML.replace('<form', f'<p style="color:#f66">{error}</p><form', 1).encode('utf-8'))
+            return
+        # setup-webapp.sh polls for this file: it must appear complete, never half written
+        with open('/var/lib/setup-data.json.tmp', 'w') as f:
             json.dump(result, f)
+        os.replace('/var/lib/setup-data.json.tmp', '/var/lib/setup-data.json')
         self.send_response(200)
         self.send_header('Content-type', 'text/html')
         self.end_headers()
         self.wfile.write(b'<html><body style="background:#1a1a1a;color:#fff;display:flex;justify-content:center;align-items:center;height:100vh;margin:0;font-family:sans-serif;"><div style="text-align:center;"><h1>Setup Complete</h1><p>The system will now reboot and deploy the stack.</p></div></body></html>')
 
-httpd = HTTPServer(('0.0.0.0', 80), Handler)
-httpd.serve_forever()
+if __name__ == '__main__':
+    HTTPServer(('0.0.0.0', 80), Handler).serve_forever()
 WEBAPP_EOF
 chmod +x "$OVL"/usr/local/bin/webapp.py
 
@@ -2733,11 +2765,6 @@ chmod +x "$OVL"/usr/local/bin/egos-extras
 # -----------------------------------------------------------------------------
 # 11b. Overlays shared with EgOS4-arm64.sh sec. 11b (Pi boot files and growroot excluded)
 # -----------------------------------------------------------------------------
-# --- hostapd: country code (regdomain of many USB/PCIe Wi-Fi cards) + rfkill unblock ---
-sed -i 's/^wpa_passphrase=setup1234$/&\ncountry_code=IT\nieee80211d=1/' "$OVL"/usr/local/bin/setup-webapp.sh
-sed -i 's|^    ip link set "\$WIFI" down 2>/dev/null \|\| true$|    rfkill unblock wlan 2>/dev/null \|\| true\n&|' "$OVL"/usr/local/bin/setup-webapp.sh
-grep -q '^country_code=IT' "$OVL"/usr/local/bin/setup-webapp.sh || { echo "ERROR 11b: country_code patch"; exit 1; }
-grep -q 'rfkill unblock wlan' "$OVL"/usr/local/bin/setup-webapp.sh || { echo "ERROR 11b: rfkill patch"; exit 1; }
 
 # --- Console banner: adds the admin console URL ---
 printf '  Home page:     http://egocenter.local:8000\n  Admin console: https://egocenter.local:9090  (Storage pool page)\n  Storage:       storage-add / storage-status / storage-drain\n  Extras:        egos-extras list\n\n' >> "$OVL"/etc/issue
